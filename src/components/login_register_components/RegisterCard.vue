@@ -1,231 +1,186 @@
 <template>
-    <v-card>
-        <v-stepper alt-labels v-model="currentStep">
-            <v-card>
-                <v-stepper-header>
-                    <v-layout row wrap>
-                        <v-flex>
-                            <v-stepper-step
-                                class="pt-3 pb-1"
-                                :complete="currentStep > 1"
-                                step="1"
-                            >
-                                信箱
-                            </v-stepper-step>
-                        </v-flex>
-                        <v-flex>
-                            <v-stepper-step
-                                class="pt-3 pb-1"
-                                :complete="currentStep > 2"
-                                step="2"
-                            >
-                                暱稱
-                            </v-stepper-step>
-                        </v-flex>
-                        <v-flex>
-                            <v-stepper-step
-                                class="pt-3 pb-1"
-                                :complete="currentStep > 3"
-                                step="3"
-                            >
-                                密碼
-                            </v-stepper-step>
-                        </v-flex>
-                        <v-flex>
-                            <v-stepper-step
-                                class="pt-3 pb-1"
-                                step="4"
-                            >
-                                條款
-                            </v-stepper-step>
-                        </v-flex>
-                    </v-layout>
-                </v-stepper-header>
-            </v-card>
+  <v-card>
+    <v-stepper
+      alt-labels
+      v-model="currentStep"
+    >
+      <v-card>
+        <v-stepper-header>
+          <v-layout
+            row
+            wrap
+          >
+            <v-flex>
+              <v-stepper-step
+                class="pt-3 pb-1"
+                :complete="currentStep > 1"
+                step="1"
+              >用戶名稱</v-stepper-step>
+            </v-flex>
+            <v-flex>
+              <v-stepper-step
+                class="pt-3 pb-1"
+                :complete="currentStep > 2"
+                step="2"
+              >密碼</v-stepper-step>
+            </v-flex>
+            <v-flex>
+              <v-stepper-step
+                class="pt-3 pb-1"
+                step="3"
+              >條款</v-stepper-step>
+            </v-flex>
+          </v-layout>
+        </v-stepper-header>
+      </v-card>
 
-            <v-stepper-items>
-                <v-stepper-content
-                    class="pa-0"
-                    step="1"
-                >
-                    <v-card class="px-5 pb-5 pt-0">
-                        <v-card-text class="pa-0">
-                            <v-layout row wrap>
-                                <v-flex xs12 class="py-3 headline text-xs-center">
-                                    填寫您的信箱
-                                </v-flex>
-                                <v-flex xs12>
-                                    <v-text-field
-                                        v-model="email"
-                                        label="信箱"
-                                        prepend-inner-icon="email"
-                                    >
-                                    </v-text-field>
-                                </v-flex>
-                            </v-layout>
-                        </v-card-text>
-                        <v-card-actions class="pa-0">
-                            <v-layout row wrap>
-                                <v-flex xs12>
-                                    <v-btn
-                                        color="primary"
-                                        block
-                                        @click="nextStep"
-                                    >
-                                        下一步
-                                    </v-btn>
-                                </v-flex>
-                            </v-layout>
-                        </v-card-actions>
-                    </v-card>
-                </v-stepper-content>
-                <v-stepper-content
-                    class="pa-0"
-                    step="2"
-                >
-                    <v-card class="px-5 pb-5 pt-0">
-                        <v-card-text class="pa-0">
-                            <v-layout row wrap>
-                                <v-flex xs12 class="py-3 headline text-xs-center">
-                                    填寫您的暱稱
-                                </v-flex>
-                                <v-flex xs12>
-                                    <v-text-field
-                                        v-model="username"
-                                        label="暱稱"
-                                        prepend-inner-icon="person"
-                                    >
-                                    </v-text-field>
-                                </v-flex>
-                            </v-layout>
-                        </v-card-text>
-                        <v-card-actions class="pa-0">
-                            <v-layout row wrap>
-                                <v-flex xs12>
-                                    <v-btn
-                                        color="primary"
-                                        block
-                                        @click="nextStep"
-                                    >
-                                        下一步
-                                    </v-btn>
-                                </v-flex>
-                                <v-flex xs12>
-                                    <v-btn
-                                        class="mt-3"
-                                        flat
-                                        block
-                                        @click="previousStep"
-                                    >
-                                        上一步
-                                    </v-btn>
-                                </v-flex>
-                            </v-layout>
-                        </v-card-actions>
-                    </v-card>
-                </v-stepper-content>
-                <v-stepper-content
-                    class="pa-0"
-                    step="3"
-                >
-                    <v-card class="px-5 pb-5 pt-0">
-                        <v-card-text class="pa-0">
-                            <v-layout row wrap>
-                                <v-flex xs12 class="py-3 headline text-xs-center">
-                                    填寫您的密碼
-                                </v-flex>
-                                <v-flex xs12>
-                                    <v-text-field
-                                        v-model="password"
-                                        label="密碼"
-                                        prepend-inner-icon="lock"
-                                        :disabled="isLoading"
-                                        :append-icon="showPassword ? 'visibility_off' : 'visibility'"
-                                        :type="showPassword ? 'text' : 'password'"
-                                        @click:append="showPassword = !showPassword"
-                                    ></v-text-field>
-                                </v-flex>
-                            </v-layout>
-                        </v-card-text>
-                        <v-card-actions class="pa-0">
-                            <v-layout row wrap>
-                                <v-flex xs12>
-                                    <v-btn
-                                        color="primary"
-                                        block
-                                        @click="nextStep"
-                                    >
-                                        下一步
-                                    </v-btn>
-                                </v-flex>
-                                <v-flex xs12>
-                                    <v-btn
-                                        class="mt-3"
-                                        flat
-                                        block
-                                        @click="previousStep"
-                                    >
-                                        上一步
-                                    </v-btn>
-                                </v-flex>
-                            </v-layout>
-                        </v-card-actions>
-                    </v-card>
-                </v-stepper-content>
-                <v-stepper-content
-                    class="pa-0"
-                    step="4"
-                >
-                    <v-card class="px-0 pb-5 pt-0">
-                        <v-card-title class="px-4">
-                            <span class="headline">用戶條款</span>
-                        </v-card-title>
-                        <v-card-text
-                            style="overflow-y: scroll; height: 300px"
-                            class="px-4 py-0"
-                        >
-                            {{ licenseContext }}
-                        </v-card-text>
-                        <v-card-actions class="px-5 py-0">
-                            <v-layout row wrap>
-                                <v-flex xs12>
-                                    <v-checkbox
-                                        v-model="agree"
-                                        color="primary"
-                                        label="我同意上述條款之內容"
-                                    ></v-checkbox>
-                                </v-flex>
-                                <v-flex xs12>
-                                    <v-btn
-                                        color="primary"
-                                        block
-                                        @click="register"
-                                        :loading="isLoading"
-                                        :disabled="isLoading || !agree"
-                                    >
-                                        註冊
-                                        <span slot="loader">
-                                            註冊中
-                                        </span>
-                                    </v-btn>
-                                </v-flex>
-                                <v-flex xs12>
-                                    <v-btn
-                                        class="mt-3"
-                                        flat
-                                        block
-                                        @click="previousStep"
-                                    >
-                                        上一步
-                                    </v-btn>
-                                </v-flex>
-                            </v-layout>
-                        </v-card-actions>
-                    </v-card>
-                </v-stepper-content>
-            </v-stepper-items>
-        </v-stepper>
-    </v-card>
+      <v-stepper-items>
+        <v-stepper-content
+          class="pa-0"
+          step="1"
+        >
+          <v-card class="px-5 pb-5 pt-0">
+            <v-card-text class="pa-0">
+              <v-layout
+                row
+                wrap
+              >
+                <v-flex
+                  xs12
+                  class="py-3 headline text-xs-center"
+                >填寫您的用戶名稱</v-flex>
+                <v-flex xs12>
+                  <v-text-field
+                    v-model="username"
+                    label="用戶名稱"
+                    prepend-inner-icon="person"
+                    :rules="[rules.required, rules.min, rules.max, rules.ascii]"
+                    counter="25"
+                  ></v-text-field>
+                </v-flex>
+              </v-layout>
+            </v-card-text>
+            <v-card-actions class="pa-0 pt-3">
+              <v-layout
+                row
+                wrap
+              >
+                <v-flex xs12>
+                  <v-btn
+                    color="primary"
+                    block
+                    @click="nextStep"
+                  >下一步</v-btn>
+                </v-flex>
+              </v-layout>
+            </v-card-actions>
+          </v-card>
+        </v-stepper-content>
+        <v-stepper-content
+          class="pa-0"
+          step="2"
+        >
+          <v-card class="px-5 pb-5 pt-0">
+            <v-card-text class="pa-0">
+              <v-layout
+                row
+                wrap
+              >
+                <v-flex
+                  xs12
+                  class="py-3 headline text-xs-center"
+                >填寫您的密碼</v-flex>
+                <v-flex xs12>
+                  <v-text-field
+                    v-model="password"
+                    label="密碼"
+                    prepend-inner-icon="lock"
+                    :disabled="isLoading"
+                    :append-icon="showPassword ? 'visibility_off' : 'visibility'"
+                    :type="showPassword ? 'text' : 'password'"
+                    @mousedown="showPassword = true"
+                    @mouseup="showPassword = false"
+                    :rules="[rules.required, rules.min, rules.max, rules.ascii]"
+                    counter="25"
+                  ></v-text-field>
+                </v-flex>
+              </v-layout>
+            </v-card-text>
+            <v-card-actions class="pa-0 pt-3">
+              <v-layout
+                row
+                wrap
+              >
+                <v-flex xs12>
+                  <v-btn
+                    color="primary"
+                    block
+                    @click="nextStep"
+                  >下一步</v-btn>
+                </v-flex>
+                <v-flex xs12>
+                  <v-btn
+                    class="mt-3"
+                    flat
+                    block
+                    @click="previousStep"
+                  >上一步</v-btn>
+                </v-flex>
+              </v-layout>
+            </v-card-actions>
+          </v-card>
+        </v-stepper-content>
+        <v-stepper-content
+          class="pa-0"
+          step="3"
+        >
+          <v-card class="px-0 pb-5 pt-0">
+            <v-card-title class="px-4">
+              <span class="headline">用戶條款</span>
+            </v-card-title>
+            <v-card-text
+              style="overflow-y: scroll; height: 300px"
+              class="px-4 py-0"
+            >{{ licenseContext }}</v-card-text>
+            <v-card-actions class="px-5 py-0">
+              <v-layout
+                row
+                wrap
+              >
+                <v-flex xs12>
+                  <v-checkbox
+                    v-model="agree"
+                    color="primary"
+                    label="我同意上述條款之內容"
+                  ></v-checkbox>
+                </v-flex>
+                <v-flex xs12>
+                  <v-btn
+                    color="primary"
+                    block
+                    @click="register"
+                    :loading="isLoading"
+                    :disabled="isLoading || !agree"
+                  >
+                    註冊
+                    <span slot="loader">註冊中</span>
+                  </v-btn>
+                </v-flex>
+                <v-flex xs12>
+                  <v-btn
+                    class="mt-3"
+                    flat
+                    block
+                    @click="previousStep"
+                  >上一步</v-btn>
+                </v-flex>
+              </v-layout>
+            </v-card-actions>
+          </v-card>
+        </v-stepper-content>
+      </v-stepper-items>
+    </v-stepper>
+  </v-card>
 </template>
 
 <script>
@@ -233,12 +188,17 @@ export default {
   data () {
     return {
       currentStep: 1,
-      email: null,
-      username: null,
-      password: null,
+      username: '',
+      password: '',
       showPassword: false,
       agree: false,
-      isLoading: false
+      isLoading: false,
+      rules: {
+        required: value => !!value || '* 必填',
+        min: value => value.length >= 8 || '* 長度至少為 8 個字元',
+        max: value => value.length <= 25 || '* 長度最多為 25 個字元',
+        ascii: value => (new RegExp('^[\\\x00-\x7F]*$')).test(value) || '* 僅允許 ascii 字元'
+      }
     }
   },
   computed: {
@@ -279,9 +239,8 @@ export default {
     resetRegisterData () {
       const vm = this
       vm.currentStep = 1
-      vm.email = null
-      vm.username = null
-      vm.password = null
+      vm.username = ''
+      vm.password = ''
       vm.showPassword = false
       vm.agree = false
       vm.isLoading = false
