@@ -123,7 +123,7 @@
 </template>
 
 <script>
-import LoginRegisterDialog from '@/components/login_register_components/LoginRegisterDialog'
+import LoginRegisterDialog from '@/components/login-register/LoginRegisterDialog'
 
 export default {
   data () {
