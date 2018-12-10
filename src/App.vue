@@ -1,5 +1,5 @@
 <template>
-  <v-app :dark="dark">
+  <v-app :dark="darkTheme">
     <login-register-dialog v-model="showLoginRegisterDialog"></login-register-dialog>
 
     <v-navigation-drawer
@@ -16,8 +16,8 @@
             label="搜索用戶"
             single-line
             hide-details
-            :solo="!dark"
-            :solo-inverted="dark"
+            :solo="!darkTheme"
+            :solo-inverted="darkTheme"
           ></v-text-field>
         </v-card-actions>
       </v-card>
@@ -67,7 +67,7 @@
           <v-list-tile>
             <v-switch
               label="深色主題"
-              v-model="dark"
+              v-model="darkTheme"
             ></v-switch>
           </v-list-tile>
           <v-list-tile>
@@ -126,11 +126,30 @@
 import LoginRegisterDialog from '@/components/login-register/LoginRegisterDialog'
 
 export default {
+  mounted () {
+    if (localStorage.getItem('darkTheme')) {
+      try {
+        this.darkTheme = JSON.parse(localStorage.getItem('darkTheme'))
+      } catch (e) {
+        localStorage.removeItem('darkTheme')
+      }
+    }
+  },
   data () {
     return {
-      dark: true,
       showDrawer: null,
       showLoginRegisterDialog: true
+    }
+  },
+  computed: {
+    darkTheme: {
+      set (value) {
+        this.$store.dispatch('switchDarkTheme', value)
+        localStorage.setItem('darkTheme', JSON.stringify(value))
+      },
+      get () {
+        return this.$store.getters.darkTheme
+      }
     }
   },
   components: {
