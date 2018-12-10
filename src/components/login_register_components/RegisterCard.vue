@@ -22,13 +22,13 @@
                 class="pt-3 pb-1"
                 :complete="currentStep > 2"
                 step="2"
-              >密碼</v-stepper-step>
+              >用戶密碼</v-stepper-step>
             </v-flex>
             <v-flex>
               <v-stepper-step
                 class="pt-3 pb-1"
                 step="3"
-              >條款</v-stepper-step>
+              >用戶協議</v-stepper-step>
             </v-flex>
           </v-layout>
         </v-stepper-header>
@@ -48,7 +48,7 @@
                 <v-flex
                   xs12
                   class="py-3 headline text-xs-center"
-                >填寫您的用戶名稱</v-flex>
+                >填寫用戶名稱</v-flex>
                 <v-flex xs12>
                   <v-text-field
                     v-model="username"
@@ -89,7 +89,7 @@
                 <v-flex
                   xs12
                   class="py-3 headline text-xs-center"
-                >填寫您的密碼</v-flex>
+                >填寫用戶密碼</v-flex>
                 <v-flex xs12>
                   <v-text-field
                     v-model="password"
@@ -136,7 +136,7 @@
         >
           <v-card class="px-0 pb-5 pt-0">
             <v-card-title class="px-4">
-              <span class="headline">用戶條款</span>
+              <span class="headline">用戶協議</span>
             </v-card-title>
             <v-card-text
               style="overflow-y: scroll; height: 300px"
@@ -151,7 +151,7 @@
                   <v-checkbox
                     v-model="agree"
                     color="primary"
-                    label="我同意上述條款之內容"
+                    label="我同意上述協議之內容"
                   ></v-checkbox>
                 </v-flex>
                 <v-flex xs12>

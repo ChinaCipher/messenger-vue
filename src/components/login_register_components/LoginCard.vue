@@ -31,7 +31,7 @@
         <v-flex>
           <v-text-field
             v-model="password"
-            label="密碼"
+            label="用戶密碼"
             prepend-inner-icon="lock"
             :disabled="isLoading"
             :append-icon="showPassword ? 'visibility_off' : 'visibility'"
