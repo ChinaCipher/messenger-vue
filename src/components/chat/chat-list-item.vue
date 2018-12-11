@@ -1,11 +1,17 @@
 <template>
   <v-list-tile avatar>
-    <v-list-tile-avatar color="primary">
+    <v-list-tile-avatar
+      color="primary"
+      size="48"
+    >
       <v-img
         v-if="hasAvatar"
         :src="avatarUrl"
       ></v-img>
-      <span v-else>{{ defaultAvatar }}</span>
+      <span
+        v-else
+        class="headline"
+      >{{ defaultAvatar }}</span>
     </v-list-tile-avatar>
     <v-list-tile-content>
       <v-list-tile-title>{{ nickname }}</v-list-tile-title>
@@ -25,8 +31,7 @@ export default {
     }
   },
   data () {
-    return {
-    }
+    return {}
   },
   props: {
     avatarUrl: String,

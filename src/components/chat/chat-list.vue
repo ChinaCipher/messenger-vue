@@ -12,7 +12,10 @@
       color="primary"
     ></v-progress-circular>
   </v-layout>
-  <v-list v-else>
+  <v-list
+    v-else
+    two-line
+  >
     <chat-list-item
       :avatarUrl="selfData.avatarUrl"
       :username="selfData.username"
