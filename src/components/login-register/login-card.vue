@@ -26,7 +26,7 @@
             prepend-inner-icon="person"
             :disabled="isLoading"
             :rules="[value => validate(value, hasError => usernameHasError = hasError)]"
-            counter="25"
+            counter="30"
           ></v-text-field>
         </v-flex>
         <v-flex>
@@ -41,7 +41,7 @@
             @mousedown="showPassword = true"
             @mouseup="showPassword = false"
             :rules="[value => validate(value, hasError => passwordHasError = hasError)]"
-            counter="25"
+            counter="30"
           ></v-text-field>
         </v-flex>
       </v-layout>
