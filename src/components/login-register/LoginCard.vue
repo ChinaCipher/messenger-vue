@@ -20,16 +20,18 @@
         </v-flex>
         <v-flex>
           <v-text-field
+            ref="username"
             v-model="username"
             label="用戶名稱"
             prepend-inner-icon="person"
             :disabled="isLoading"
-            :rules="[rules.required, rules.min, rules.max, rules.ascii]"
+            :rules="[value => validate(value, hasError => usernameHasError = hasError)]"
             counter="25"
           ></v-text-field>
         </v-flex>
         <v-flex>
           <v-text-field
+            ref="password"
             v-model="password"
             label="用戶密碼"
             prepend-inner-icon="lock"
@@ -38,7 +40,7 @@
             :type="showPassword ? 'text' : 'password'"
             @mousedown="showPassword = true"
             @mouseup="showPassword = false"
-            :rules="[rules.required, rules.min, rules.max, rules.ascii]"
+            :rules="[value => validate(value, hasError => passwordHasError = hasError)]"
             counter="25"
           ></v-text-field>
         </v-flex>
@@ -50,7 +52,7 @@
         block
         @click="login"
         :loading="isLoading"
-        :disabled="isLoading"
+        :disabled="usernameHasError || passwordHasError || isLoading"
       >
         登入
         <span slot="loader">登入中</span>
@@ -64,19 +66,37 @@ export default {
   data () {
     return {
       username: '',
+      usernameHasError: false,
       password: '',
+      passwordHasError: false,
       showPassword: false,
       isLoading: false,
       rules: {
-        required: value => !!value || '* 必填',
-        min: value => value.length >= 8 || '* 長度至少為 8 個字元',
-        max: value => value.length <= 25 || '* 長度最多為 25 個字元',
-        ascii: value =>
-          new RegExp('^[\\\x00-\x7F]*$').test(value) || '* 僅允許 ascii 字元'
+        required: value => !!value,
+        min: value => value.length >= 8,
+        max: value => value.length <= 30,
+        ascii: value => (new RegExp('^[\\\x00-\x7F]*$')).test(value)
       }
     }
   },
   methods: {
+    validate (value, callback) {
+      let rules = this.rules
+      let message = ''
+      let hasError = false
+      if (!rules.required(value)) {
+        message = '* 必填'
+      } else if (!rules.min(value)) {
+        message = '* 長度最少為 8 個字元'
+      } else if (!rules.max(value)) {
+        message = '* 長度最多為 30 個字元'
+      } else if (!rules.ascii(value)) {
+        message = '* 內容必須是 ascii 字元'
+      }
+      hasError = !!message
+      callback(hasError)
+      return !hasError || message
+    },
     login () {
       const vm = this
       if (!vm.isLoading) {
@@ -90,8 +110,8 @@ export default {
     },
     resetLoginData () {
       const vm = this
-      vm.username = ''
-      vm.password = ''
+      vm.$refs.username.reset()
+      vm.$refs.password.reset()
       vm.showPassword = false
       vm.isLoading = false
     }

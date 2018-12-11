@@ -51,11 +51,12 @@
                 >填寫用戶名稱</v-flex>
                 <v-flex xs12>
                   <v-text-field
+                    ref="username"
                     v-model="username"
                     label="用戶名稱"
                     prepend-inner-icon="person"
-                    :rules="[rules.required, rules.min, rules.max, rules.ascii]"
-                    counter="25"
+                    :rules="[value => validate(value, hasError => usernameHasError = hasError)]"
+                    counter="30"
                   ></v-text-field>
                 </v-flex>
               </v-layout>
@@ -69,6 +70,7 @@
                   <v-btn
                     color="primary"
                     block
+                    :disabled="usernameHasError"
                     @click="nextStep"
                   >下一步</v-btn>
                 </v-flex>
@@ -92,6 +94,7 @@
                 >填寫用戶密碼</v-flex>
                 <v-flex xs12>
                   <v-text-field
+                    ref="password"
                     v-model="password"
                     label="密碼"
                     prepend-inner-icon="lock"
@@ -100,7 +103,7 @@
                     :type="showPassword ? 'text' : 'password'"
                     @mousedown="showPassword = true"
                     @mouseup="showPassword = false"
-                    :rules="[rules.required, rules.min, rules.max, rules.ascii]"
+                    :rules="[value => validate(value, hasError => passwordHasError = hasError)]"
                     counter="25"
                   ></v-text-field>
                 </v-flex>
@@ -115,6 +118,7 @@
                   <v-btn
                     color="primary"
                     block
+                    :disabled="passwordHasError"
                     @click="nextStep"
                   >下一步</v-btn>
                 </v-flex>
@@ -189,15 +193,17 @@ export default {
     return {
       currentStep: 1,
       username: '',
+      usernameHasError: false,
       password: '',
+      passwordHasError: false,
       showPassword: false,
       agree: false,
       isLoading: false,
       rules: {
-        required: value => !!value || '* 必填',
-        min: value => value.length >= 8 || '* 長度至少為 8 個字元',
-        max: value => value.length <= 25 || '* 長度最多為 25 個字元',
-        ascii: value => (new RegExp('^[\\\x00-\x7F]*$')).test(value) || '* 僅允許 ascii 字元'
+        required: value => !!value,
+        min: value => value.length >= 8,
+        max: value => value.length <= 30,
+        ascii: value => (new RegExp('^[\\\x00-\x7F]*$')).test(value)
       }
     }
   },
@@ -217,6 +223,23 @@ export default {
     }
   },
   methods: {
+    validate (value, callback) {
+      let rules = this.rules
+      let message = ''
+      let hasError = false
+      if (!rules.required(value)) {
+        message = '* 必填'
+      } else if (!rules.min(value)) {
+        message = '* 長度最少為 8 個字元'
+      } else if (!rules.max(value)) {
+        message = '* 長度最多為 30 個字元'
+      } else if (!rules.ascii(value)) {
+        message = '* 內容必須是 ascii 字元'
+      }
+      hasError = !!message
+      callback(hasError)
+      return !hasError || message
+    },
     register () {
       const vm = this
       if (!vm.isLoading) {
@@ -239,8 +262,8 @@ export default {
     resetRegisterData () {
       const vm = this
       vm.currentStep = 1
-      vm.username = ''
-      vm.password = ''
+      vm.$refs.username.reset()
+      vm.$refs.password.reset()
       vm.showPassword = false
       vm.agree = false
       vm.isLoading = false
