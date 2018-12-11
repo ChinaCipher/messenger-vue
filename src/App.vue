@@ -22,7 +22,7 @@
         </v-card-actions>
       </v-card>
       <v-divider></v-divider>
-      <v-list></v-list>
+      <chat-list></chat-list>
     </v-navigation-drawer>
 
     <v-toolbar
@@ -124,6 +124,7 @@
 
 <script>
 import LoginRegisterDialog from '@/components/login-register/login-register-dialog'
+import ChatList from '@/components/chat/chat-list'
 
 export default {
   mounted () {
@@ -153,7 +154,8 @@ export default {
     }
   },
   components: {
-    LoginRegisterDialog
+    LoginRegisterDialog,
+    ChatList
   }
 }
 </script>
