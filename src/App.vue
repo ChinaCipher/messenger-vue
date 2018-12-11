@@ -4,6 +4,7 @@
 
     <v-navigation-drawer
       app
+      v-if="$store.getters.loggedIn"
       v-model="showDrawer"
       clipped
       hide-overlay

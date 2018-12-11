@@ -1,3 +1,4 @@
 export default {
-  darkTheme: false
+  darkTheme: false,
+  loggedIn: false
 }

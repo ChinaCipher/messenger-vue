@@ -98,22 +98,27 @@ export default {
       return !hasError || message
     },
     login () {
-      const vm = this
-      if (!vm.isLoading) {
-        vm.isLoading = true
-        setTimeout(() => {
-          vm.isLoading = false
-          vm.$emit('logged-in')
-          vm.resetLoginData()
-        }, 3000)
+      if (!this.isLoading) {
+        this.isLoading = true
+        let promise = new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve()
+          }, 2000)
+        })
+
+        promise.then(() => {
+          this.isLoading = false
+          this.$store.dispatch('login')
+          this.$emit('logged-in')
+          this.resetLoginData()
+        })
       }
     },
     resetLoginData () {
-      const vm = this
-      vm.$refs.username.reset()
-      vm.$refs.password.reset()
-      vm.showPassword = false
-      vm.isLoading = false
+      this.$refs.username.reset()
+      this.$refs.password.reset()
+      this.showPassword = false
+      this.isLoading = false
     }
   }
 }
