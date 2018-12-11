@@ -1,5 +1,5 @@
 <template>
-  <v-app :dark="darkTheme">
+  <v-app :dark="$store.getters.darkTheme">
     <login-register-dialog v-model="showLoginRegisterDialog"></login-register-dialog>
 
     <v-navigation-drawer
@@ -17,8 +17,8 @@
             label="搜索用戶"
             single-line
             hide-details
-            :solo="!darkTheme"
-            :solo-inverted="darkTheme"
+            :solo="!$store.getters.darkTheme"
+            :solo-inverted="$store.getters.darkTheme"
           ></v-text-field>
         </v-card-actions>
       </v-card>
@@ -51,52 +51,7 @@
         </v-layout>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-menu
-        min-width="150"
-        left
-        offset-y
-        nudge-bottom="10"
-      >
-        <v-btn
-          slot="activator"
-          icon
-        >
-          <v-icon>more_vert</v-icon>
-        </v-btn>
-
-        <v-list>
-          <v-list-tile>
-            <v-switch
-              label="深色主題"
-              v-model="darkTheme"
-            ></v-switch>
-          </v-list-tile>
-          <v-list-tile>
-            <v-list-tile-title>
-              <v-layout
-                row
-                wrap
-                align-center
-              >
-                <v-icon>settings</v-icon>
-                <pre>  設定</pre>
-              </v-layout>
-            </v-list-tile-title>
-          </v-list-tile>
-          <v-list-tile>
-            <v-list-tile-title>
-              <v-layout
-                row
-                wrap
-                align-center
-              >
-                <v-icon>exit_to_app</v-icon>
-                <pre>  登出</pre>
-              </v-layout>
-            </v-list-tile-title>
-          </v-list-tile>
-        </v-list>
-      </v-menu>
+      <toolbar-menu></toolbar-menu>
     </v-toolbar>
 
     <v-content>
@@ -124,6 +79,7 @@
 </template>
 
 <script>
+import ToolbarMenu from '@/components/toolbar-menu'
 import LoginRegisterDialog from '@/components/login-register/login-register-dialog'
 import ChatList from '@/components/chat/chat-list'
 
@@ -143,18 +99,8 @@ export default {
       showLoginRegisterDialog: true
     }
   },
-  computed: {
-    darkTheme: {
-      set (value) {
-        this.$store.dispatch('switchDarkTheme', value)
-        localStorage.setItem('darkTheme', JSON.stringify(value))
-      },
-      get () {
-        return this.$store.getters.darkTheme
-      }
-    }
-  },
   components: {
+    ToolbarMenu,
     LoginRegisterDialog,
     ChatList
   }
