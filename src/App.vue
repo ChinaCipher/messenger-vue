@@ -123,7 +123,7 @@
 </template>
 
 <script>
-import LoginRegisterDialog from '@/components/login-register/LoginRegisterDialog'
+import LoginRegisterDialog from '@/components/login-register/login-register-dialog'
 
 export default {
   mounted () {
