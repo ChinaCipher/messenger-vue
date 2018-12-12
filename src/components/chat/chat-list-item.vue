@@ -5,13 +5,8 @@
       size="48"
     >
       <v-img
-        v-if="hasAvatar"
-        :src="avatarUrl"
+        :src="avatar"
       ></v-img>
-      <span
-        v-else
-        class="headline"
-      >{{ defaultAvatar }}</span>
     </v-list-tile-avatar>
     <v-list-tile-content>
       <v-list-tile-title>{{ nickname }}</v-list-tile-title>
@@ -23,11 +18,8 @@
 <script>
 export default {
   computed: {
-    hasAvatar () {
-      return !!this.avatarUrl
-    },
-    defaultAvatar () {
-      return this.nickname[0]
+    avatar () {
+      return this.avatarUrl ? this.avatarUrl : '/img/default_avatar.png'
     }
   },
   data () {
