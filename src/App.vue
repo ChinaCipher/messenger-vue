@@ -92,7 +92,7 @@ export default {
   mounted () {
     if (localStorage.getItem('darkTheme')) {
       try {
-        this.darkTheme = JSON.parse(localStorage.getItem('darkTheme'))
+        this.$store.dispatch('switchDarkTheme', JSON.parse(localStorage.getItem('darkTheme')))
       } catch (e) {
         localStorage.removeItem('darkTheme')
       }
