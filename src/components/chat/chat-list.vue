@@ -53,7 +53,7 @@ export default {
     }
   },
   methods: {
-    loadData () {
+    loadTestData () {
       const vm = this
       setTimeout(() => {
         vm.selfData = {
@@ -102,10 +102,14 @@ export default {
         ]
         vm.isLoading = false
       }, 1000)
+    },
+    loadData () {},
+    clickChatListItem (index) {
+      console.log(index)
     }
   },
   mounted () {
-    this.loadData()
+    this.loadTestData()
   }
 }
 </script>
