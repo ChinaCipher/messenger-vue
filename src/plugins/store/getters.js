@@ -1,8 +1,6 @@
 export default {
-  darkTheme: state => {
-    return state.darkTheme
-  },
-  loggedIn: state => {
-    return state.loggedIn
-  }
+  darkTheme: state => state.darkTheme,
+  loggedIn: state => state.loggedIn,
+  selfData: state => state.selfData,
+  chattingData: state => state.chattingData
 }

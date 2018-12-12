@@ -7,5 +7,11 @@ export default {
   },
   logout ({ commit }) {
     commit('logout')
+  },
+  updateSelfData ({ commit }, data) {
+    commit('updateSelfData', data)
+  },
+  updateChattingData ({ commit }, data) {
+    commit('updateChattingData', data)
   }
 }

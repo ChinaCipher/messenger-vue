@@ -40,16 +40,19 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import ChatListItem from '@/components/chat/chat-list-item'
 
 export default {
   components: {
     ChatListItem
   },
+  computed: {
+    ...mapGetters(['selfData'])
+  },
   data () {
     return {
       isLoading: true,
-      selfData: {},
       chatDatas: []
     }
   },
@@ -57,12 +60,12 @@ export default {
     loadTestData () {
       const vm = this
       setTimeout(() => {
-        vm.selfData = {
+        vm.$store.dispatch('updateSelfData', {
           avatarUrl: '',
           username: 'wecp0826',
           nickname: 'DevilTea',
           lastMessage: '你上次說了什麼？'
-        }
+        })
         vm.chatDatas = [
           {
             avatarUrl: '',
@@ -106,7 +109,7 @@ export default {
     },
     loadData () {},
     clickChatListItem (index) {
-      console.log(index)
+      this.$store.dispatch('updateChattingData', this.chatDatas[index])
     }
   },
   mounted () {
