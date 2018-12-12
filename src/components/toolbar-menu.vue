@@ -12,36 +12,18 @@
       <v-icon>more_vert</v-icon>
     </v-btn>
 
-    <v-list>
+    <v-list avatar>
       <v-list-tile>
         <v-switch
           label="深色主題"
           v-model="darkTheme"
         ></v-switch>
       </v-list-tile>
-      <v-list-tile>
-        <v-list-tile-title>
-          <v-layout
-            row
-            wrap
-            align-center
-          >
-            <v-icon>settings</v-icon>
-            <pre>  設定</pre>
-          </v-layout>
-        </v-list-tile-title>
-      </v-list-tile>
-      <v-list-tile>
-        <v-list-tile-title>
-          <v-layout
-            row
-            wrap
-            align-center
-          >
-            <v-icon>exit_to_app</v-icon>
-            <pre>  登出</pre>
-          </v-layout>
-        </v-list-tile-title>
+      <v-list-tile @click="logout">
+        <v-list-tile-avatar>
+          <v-icon>exit_to_app</v-icon>
+        </v-list-tile-avatar>
+        <v-list-tile-title>登出</v-list-tile-title>
       </v-list-tile>
     </v-list>
   </v-menu>
@@ -63,6 +45,11 @@ export default {
       get () {
         return this.$store.getters.darkTheme
       }
+    }
+  },
+  methods: {
+    logout () {
+      this.$store.dispatch('logout')
     }
   }
 }
