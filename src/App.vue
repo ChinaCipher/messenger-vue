@@ -26,10 +26,21 @@
       <chat-list></chat-list>
     </v-navigation-drawer>
 
+    <v-navigation-drawer
+      app
+      v-if="$store.getters.loggedIn"
+      right
+      clipped
+      hide-overlay
+      mobile-break-point="960"
+    >
+    </v-navigation-drawer>
+
     <v-toolbar
       app
       absolute
       clipped-left
+      clipped-right
       height="90"
     >
       <v-toolbar-side-icon
@@ -55,7 +66,7 @@
     </v-toolbar>
 
     <v-content>
-      <v-container fluid>
+      <v-container class="pa-1" fluid fill-height>
         <router-view></router-view>
       </v-container>
     </v-content>
