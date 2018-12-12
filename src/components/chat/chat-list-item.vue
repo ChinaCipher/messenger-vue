@@ -1,5 +1,8 @@
 <template>
-  <v-list-tile avatar>
+  <v-list-tile
+    avatar
+    @click="$emit('click')"
+  >
     <v-list-tile-avatar
       color="primary"
       size="48"

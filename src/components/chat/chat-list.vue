@@ -33,6 +33,7 @@
         :username="data.username"
         :nickname="data.nickname"
         :lastMessage="data.lastMessage"
+        @click="clickChatListItem(index)"
       ></chat-list-item>
     </template>
   </v-list>
@@ -65,38 +66,38 @@ export default {
         vm.chatDatas = [
           {
             avatarUrl: '',
-            username: 'wecp0826',
-            nickname: 'DevilTea',
+            username: 'weqrqrqwe',
+            nickname: 'qwerqwerr',
             lastMessage: '你上次說了什麼？'
           },
           {
             avatarUrl: '',
-            username: 'wecp0826',
-            nickname: 'DevilTea',
+            username: 'asdfasdf',
+            nickname: 'asdfasdf',
             lastMessage: '你上次說了什麼？'
           },
           {
             avatarUrl: '',
-            username: 'wecp0826',
-            nickname: 'DevilTea',
+            username: 'qwerqwer',
+            nickname: 'qwerqwer',
             lastMessage: '你上次說了什麼？'
           },
           {
             avatarUrl: '',
-            username: 'wecp0826',
-            nickname: 'DevilTea',
+            username: 'dfghdfgh',
+            nickname: 'dfghdfgh',
             lastMessage: '你上次說了什麼？'
           },
           {
             avatarUrl: '',
-            username: 'wecp0826',
-            nickname: 'DevilTea',
+            username: 'cvbncvbn',
+            nickname: 'cvbncvbn',
             lastMessage: '你上次說了什麼？'
           },
           {
             avatarUrl: '',
-            username: 'wecp0826',
-            nickname: 'DevilTea',
+            username: 'hjklhjkl',
+            nickname: 'hjklhjkl',
             lastMessage: '你上次說了什麼？'
           }
         ]
