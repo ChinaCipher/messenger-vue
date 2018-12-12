@@ -19,7 +19,7 @@
     </v-tabs>
     <v-tabs-items v-model="currentTab">
       <v-tab-item value="tab-login">
-        <login-card @logged-in="$emit('input', false)"></login-card>
+        <login-card @logged-in="/* $emit('input', false) */"></login-card>
       </v-tab-item>
       <v-tab-item value="tab-register">
         <register-card @registered="currentTab = 'tab-login'"></register-card>

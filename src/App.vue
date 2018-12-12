@@ -1,6 +1,6 @@
 <template>
   <v-app :dark="$store.getters.darkTheme">
-    <login-register-dialog v-model="showLoginRegisterDialog"></login-register-dialog>
+    <login-register-dialog :value="showLoginRegisterDialog"></login-register-dialog>
 
     <v-navigation-drawer
       app
@@ -84,6 +84,11 @@ import LoginRegisterDialog from '@/components/login-register/login-register-dial
 import ChatList from '@/components/chat/chat-list'
 
 export default {
+  computed: {
+    showLoginRegisterDialog () {
+      return !this.$store.getters.loggedIn
+    }
+  },
   mounted () {
     if (localStorage.getItem('darkTheme')) {
       try {
@@ -95,8 +100,7 @@ export default {
   },
   data () {
     return {
-      showDrawer: null,
-      showLoginRegisterDialog: true
+      showDrawer: null
     }
   },
   components: {
