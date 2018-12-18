@@ -49,7 +49,10 @@ export default {
   },
   methods: {
     logout () {
-      this.$store.dispatch('logout')
+      this.$api.logout()
+        .then(successful => {
+          this.$store.dispatch('logout')
+        })
     }
   }
 }

@@ -16,39 +16,40 @@
     v-else
     two-line
   >
-    <chat-list-item
-      :avatarUrl="selfData.avatarUrl"
-      :username="selfData.username"
-      :nickname="selfData.nickname"
-      :lastMessage="selfData.lastMessage"
-    ></chat-list-item>
-    <template v-for="(data, index) in chatDatas">
+    <template v-for="(contact, index) in contacts">
       <v-divider
+        v-if="index != 0"
         :key="'divider' + index"
         inset
       ></v-divider>
-      <chat-list-item
-        :key="'chat-list-item' + index"
-        :avatarUrl="data.avatarUrl"
-        :username="data.username"
-        :nickname="data.nickname"
-        :lastMessage="data.lastMessage"
-        @click="clickChatListItem(index)"
-      ></chat-list-item>
+      <v-list-tile
+        :key="'item' + index"
+        avatar
+        :to="'/chatroom/' + contact.username"
+      >
+        <v-list-tile-avatar
+          color="primary"
+          size="48"
+        >
+          <v-img
+            :src="contact.avatarUrl ? contact.avatarUrl : '/img/default_avatar.png'"
+          ></v-img>
+        </v-list-tile-avatar>
+        <v-list-tile-content>
+          <v-list-tile-title>{{ contact.nickname }}</v-list-tile-title>
+          <v-list-tile-sub-title>{{ contact.lastMessage }}</v-list-tile-sub-title>
+        </v-list-tile-content>
+      </v-list-tile>
     </template>
   </v-list>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import ChatListItem from '@/components/chat/chat-list-item'
 
 export default {
-  components: {
-    ChatListItem
-  },
   computed: {
-    ...mapGetters(['selfData'])
+    ...mapGetters(['selfInfo', 'contacts'])
   },
   data () {
     return {
@@ -57,63 +58,13 @@ export default {
     }
   },
   methods: {
-    loadTestData () {
-      const vm = this
-      setTimeout(() => {
-        vm.$store.dispatch('updateSelfData', {
-          avatarUrl: '',
-          username: 'wecp0826',
-          nickname: 'DevilTea',
-          lastMessage: '你上次說了什麼？'
-        })
-        vm.chatDatas = [
-          {
-            avatarUrl: '',
-            username: 'weqrqrqwe',
-            nickname: 'qwerqwerr',
-            lastMessage: '你上次說了什麼？'
-          },
-          {
-            avatarUrl: '',
-            username: 'asdfasdf',
-            nickname: 'asdfasdf',
-            lastMessage: '你上次說了什麼？'
-          },
-          {
-            avatarUrl: '',
-            username: 'qwerqwer',
-            nickname: 'qwerqwer',
-            lastMessage: '你上次說了什麼？'
-          },
-          {
-            avatarUrl: '',
-            username: 'dfghdfgh',
-            nickname: 'dfghdfgh',
-            lastMessage: '你上次說了什麼？'
-          },
-          {
-            avatarUrl: '',
-            username: 'cvbncvbn',
-            nickname: 'cvbncvbn',
-            lastMessage: '你上次說了什麼？'
-          },
-          {
-            avatarUrl: '',
-            username: 'hjklhjkl',
-            nickname: 'hjklhjkl',
-            lastMessage: '你上次說了什麼？'
-          }
-        ]
-        vm.isLoading = false
-      }, 1000)
-    },
     loadData () {},
     clickChatListItem (index) {
-      this.$store.dispatch('updateChattingData', this.chatDatas[index])
+      this.$store.dispatch('updateChatRoomInfo', this.contacts[index])
     }
   },
   mounted () {
-    this.loadTestData()
+    this.loadData()
   }
 }
 </script>

@@ -56,6 +56,7 @@
                     label="用戶名稱"
                     prepend-inner-icon="person"
                     :rules="[value => validate(value, hasError => usernameHasError = hasError)]"
+                    :error-messages="errorMessage"
                     counter="30"
                   ></v-text-field>
                 </v-flex>
@@ -70,7 +71,7 @@
                   <v-btn
                     color="primary"
                     block
-                    :disabled="usernameHasError"
+                    :disabled="usernameHasError || !usernameExistedChecked || usernameExisted"
                     @click="nextStep"
                   >下一步</v-btn>
                 </v-flex>
@@ -194,6 +195,9 @@ export default {
       currentStep: 1,
       username: '',
       usernameHasError: false,
+      usernameExisted: false,
+      usernameExistedChecked: false,
+      errorMessage: '',
       password: '',
       passwordHasError: false,
       showPassword: false,
@@ -222,7 +226,37 @@ export default {
                     +`
     }
   },
+  watch: {
+    username () {
+      this.checkUsernameExisted()
+    }
+  },
   methods: {
+    checkUsernameExisted () {
+      this.usernameExistedChecked = false
+      // this.$api.getUserInfo(this.username)
+      const delay = (ms) => new Promise((resolve, reject) => {
+        try {
+          setTimeout(resolve, ms)
+        } catch (e) {
+          reject(e)
+        }
+      })
+      delay(1000)
+        .then(() => {
+          return this.username === 'adminadmin'
+        })
+        .then(info => {
+          this.usernameExistedChecked = true
+          if (info) {
+            this.usernameExisted = true
+            this.errorMessage = '* 已存在的用戶名稱'
+          } else {
+            this.usernameExisted = false
+            this.errorMessage = ''
+          }
+        })
+    },
     validate (value, callback) {
       let rules = this.rules
       let message = ''
@@ -266,7 +300,6 @@ export default {
       vm.$refs.password.reset()
       vm.showPassword = false
       vm.agree = false
-      vm.isLoading = false
     }
   }
 }

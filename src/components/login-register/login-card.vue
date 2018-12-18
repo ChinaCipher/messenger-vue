@@ -3,6 +3,17 @@
     class="pa-5"
     @keydown.enter="login"
   >
+    <v-dialog
+      v-model="showFailedDialog"
+      max-width="200"
+    >
+      <v-card>
+        <v-card-text class="text-xs-center headline">
+          <p><v-icon size="48" color="primary">warning</v-icon></p>
+          <p>登入失敗</p>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <v-card-text class="pa-0">
       <v-layout
         row
@@ -26,6 +37,7 @@
             prepend-inner-icon="person"
             :disabled="isLoading"
             :rules="[value => validate(value, hasError => usernameHasError = hasError)]"
+            :error-messages="errorMessage"
             counter="30"
           ></v-text-field>
         </v-flex>
@@ -38,8 +50,7 @@
             :disabled="isLoading"
             :append-icon="showPassword ? 'visibility_off' : 'visibility'"
             :type="showPassword ? 'text' : 'password'"
-            @mousedown="showPassword = true"
-            @mouseup="showPassword = false"
+            @click:append="showPassword = !showPassword"
             :rules="[value => validate(value, hasError => passwordHasError = hasError)]"
             counter="30"
           ></v-text-field>
@@ -52,7 +63,7 @@
         block
         @click="login"
         :loading="isLoading"
-        :disabled="usernameHasError || passwordHasError || isLoading"
+        :disabled="usernameHasError || !usernameExistedChecked || !usernameExisted || passwordHasError || isLoading"
       >
         登入
         <span slot="loader">登入中</span>
@@ -67,10 +78,14 @@ export default {
     return {
       username: '',
       usernameHasError: false,
+      usernameExisted: false,
+      usernameExistedChecked: false,
+      errorMessage: '',
       password: '',
       passwordHasError: false,
       showPassword: false,
       isLoading: false,
+      showFailedDialog: false,
       rules: {
         required: value => !!value,
         min: value => value.length >= 8,
@@ -79,7 +94,37 @@ export default {
       }
     }
   },
+  watch: {
+    username () {
+      this.checkUsernameExisted()
+    }
+  },
   methods: {
+    checkUsernameExisted () {
+      this.usernameExistedChecked = false
+      // this.$api.getUserInfo(this.username)
+      const delay = (ms) => new Promise((resolve, reject) => {
+        try {
+          setTimeout(resolve, ms)
+        } catch (e) {
+          reject(e)
+        }
+      })
+      delay(1000)
+        .then(() => {
+          return this.username === 'adminadmin'
+        })
+        .then(info => {
+          this.usernameExistedChecked = true
+          if (!info) {
+            this.usernameExisted = false
+            this.errorMessage = '* 不存在的用戶名稱'
+          } else {
+            this.usernameExisted = true
+            this.errorMessage = ''
+          }
+        })
+    },
     validate (value, callback) {
       let rules = this.rules
       let message = ''
@@ -97,28 +142,25 @@ export default {
       callback(hasError)
       return !hasError || message
     },
-    login () {
+    async login () {
       if (!this.isLoading) {
         this.isLoading = true
-        let promise = new Promise((resolve, reject) => {
-          setTimeout(() => {
-            resolve()
-          }, 2000)
-        })
-
-        promise.then(() => {
-          this.isLoading = false
+        let info = await this.$api.login(this.username, this.password)
+        this.isLoading = false
+        if (info) {
+          this.$store.dispatch('setUserInfo', info)
           this.$store.dispatch('login')
-          this.$emit('logged-in')
           this.resetLoginData()
-        })
+          this.$emit('logged-in')
+        } else {
+          this.showFailedDialog = true
+        }
       }
     },
     resetLoginData () {
       this.$refs.username.reset()
       this.$refs.password.reset()
       this.showPassword = false
-      this.isLoading = false
     }
   }
 }
