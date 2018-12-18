@@ -246,18 +246,18 @@ export default {
   methods: {
     checkUsernameExisted () {
       this.usernameExistedChecked = false
-      // this.$api.getUserInfo(this.username)
-      const delay = (ms) => new Promise((resolve, reject) => {
-        try {
-          setTimeout(resolve, ms)
-        } catch (e) {
-          reject(e)
-        }
-      })
-      delay(1000)
-        .then(() => {
-          return this.username === 'adminadmin'
-        })
+      this.$api.getUserInfo(this.username)
+      // const delay = (ms) => new Promise((resolve, reject) => {
+      //   try {
+      //     setTimeout(resolve, ms)
+      //   } catch (e) {
+      //     reject(e)
+      //   }
+      // })
+      // delay(1000)
+      //   .then(() => {
+      //     return this.username === 'adminadmin'
+      //   })
         .then(info => {
           this.usernameExistedChecked = true
           if (info) {
@@ -292,8 +292,8 @@ export default {
         let successful = await this.$api.register(this.username, this.password)
         this.isLoading = false
         if (successful) {
-          this.resetRegisterData()
           this.$emit('registered')
+          this.resetRegisterData()
         } else {
           this.showFailedDialog = true
           this.currentStep = 1
@@ -301,20 +301,28 @@ export default {
       }
     },
     nextStep () {
-      const vm = this
-      vm.currentStep += 1
+      this.currentStep += 1
     },
     previousStep () {
-      const vm = this
-      vm.currentStep -= 1
+      this.currentStep -= 1
     },
     resetRegisterData () {
-      const vm = this
-      vm.currentStep = 1
-      vm.$refs.username.reset()
-      vm.$refs.password.reset()
-      vm.showPassword = false
-      vm.agree = false
+      this.currentStep = 1
+      this.username = ''
+      this.usernameHasError = false
+      this.usernameExisted = false
+      this.usernameExistedChecked = false
+      this.errorMessage = ''
+      this.password = ''
+      this.passwordHasError = false
+      this.showPassword = false
+      this.showFailedDialog = false
+      this.agree = false
+      this.isLoading = false
+      this.$refs.username.onBlur()
+      this.$refs.password.onBlur()
+      this.$refs.username.reset()
+      this.$refs.password.reset()
     }
   }
 }

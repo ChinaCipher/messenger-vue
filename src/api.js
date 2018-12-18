@@ -41,7 +41,7 @@ const api = {
   },
   login: async (username, password) => {
     try {
-      let salt = '$2b$10$' + crypto.createHash('sha256').update(password).digest('hex').slice(0, 22)
+      let salt = '$2b$10$' + crypto.createHash('sha256').update(username).digest('hex').slice(0, 22)
       let code = (await axios.get('/session')).data.code
       let hash1 = await bcrypt.hash(password, salt)
       let hash2 = await bcrypt.hash(hash1, code)

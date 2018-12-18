@@ -9,7 +9,12 @@
     >
       <v-card>
         <v-card-text class="text-xs-center headline">
-          <p><v-icon size="48" color="primary">warning</v-icon></p>
+          <p>
+            <v-icon
+              size="48"
+              color="primary"
+            >warning</v-icon>
+          </p>
           <p>登入失敗</p>
         </v-card-text>
       </v-card>
@@ -63,7 +68,7 @@
         block
         @click="login"
         :loading="isLoading"
-        :disabled="usernameHasError || !usernameExistedChecked || !usernameExisted || passwordHasError || isLoading"
+        :disabled="!btnLoginEnabled"
       >
         登入
         <span slot="loader">登入中</span>
@@ -74,6 +79,17 @@
 
 <script>
 export default {
+  computed: {
+    btnLoginEnabled () {
+      return (
+        !this.usernameHasError &&
+        this.usernameExistedChecked &&
+        this.usernameExisted &&
+        !this.passwordHasError &&
+        !this.isLoading
+      )
+    }
+  },
   data () {
     return {
       username: '',
@@ -90,7 +106,7 @@ export default {
         required: value => !!value,
         min: value => value.length >= 8,
         max: value => value.length <= 30,
-        ascii: value => (new RegExp('^[\\\x00-\x7F]*$')).test(value)
+        ascii: value => new RegExp('^[\\\x00-\x7F]*$').test(value)
       }
     }
   },
@@ -102,23 +118,26 @@ export default {
   methods: {
     checkUsernameExisted () {
       this.usernameExistedChecked = false
-      // this.$api.getUserInfo(this.username)
-      const delay = (ms) => new Promise((resolve, reject) => {
-        try {
-          setTimeout(resolve, ms)
-        } catch (e) {
-          reject(e)
-        }
-      })
-      delay(1000)
-        .then(() => {
-          return this.username === 'adminadmin'
-        })
+      this.$api.getUserInfo(this.username)
+      // const delay = ms =>
+      //   new Promise((resolve, reject) => {
+      //     try {
+      //       setTimeout(resolve, ms)
+      //     } catch (e) {
+      //       reject(e)
+      //     }
+      //   })
+      // delay(1000)
+      //   .then(() => {
+      //     return this.username === 'adminadmin'
+      //   })
         .then(info => {
           this.usernameExistedChecked = true
           if (!info) {
             this.usernameExisted = false
-            this.errorMessage = this.usernameHasError ? '' : '* 不存在的用戶名稱'
+            this.errorMessage = this.usernameHasError
+              ? ''
+              : '* 不存在的用戶名稱'
           } else {
             this.usernameExisted = true
             this.errorMessage = ''
@@ -143,24 +162,35 @@ export default {
       return !hasError || message
     },
     async login () {
-      if (!this.isLoading) {
+      if (this.btnLoginEnabled) {
         this.isLoading = true
         let info = await this.$api.login(this.username, this.password)
         this.isLoading = false
         if (info) {
           this.$store.dispatch('setUserInfo', info)
           this.$store.dispatch('login')
-          this.resetLoginData()
           this.$emit('logged-in')
+          this.resetLoginData()
         } else {
           this.showFailedDialog = true
         }
       }
     },
     resetLoginData () {
+      this.username = ''
+      this.usernameHasError = false
+      this.usernameExisted = false
+      this.usernameExistedChecked = false
+      this.errorMessage = ''
+      this.password = ''
+      this.passwordHasError = false
+      this.showPassword = false
+      this.isLoading = false
+      this.showFailedDialog = false
+      this.$refs.username.onBlur()
+      this.$refs.password.onBlur()
       this.$refs.username.reset()
       this.$refs.password.reset()
-      this.showPassword = false
     }
   }
 }
