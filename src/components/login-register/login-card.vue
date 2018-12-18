@@ -118,7 +118,7 @@ export default {
           this.usernameExistedChecked = true
           if (!info) {
             this.usernameExisted = false
-            this.errorMessage = '* 不存在的用戶名稱'
+            this.errorMessage = this.usernameHasError ? '' : '* 不存在的用戶名稱'
           } else {
             this.usernameExisted = true
             this.errorMessage = ''

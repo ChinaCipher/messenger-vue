@@ -1,5 +1,16 @@
 <template>
   <v-card>
+    <v-dialog
+      v-model="showFailedDialog"
+      max-width="200"
+    >
+      <v-card>
+        <v-card-text class="text-xs-center headline">
+          <p><v-icon size="48" color="primary">warning</v-icon></p>
+          <p>註冊失敗</p>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <v-stepper
       alt-labels
       v-model="currentStep"
@@ -201,6 +212,7 @@ export default {
       password: '',
       passwordHasError: false,
       showPassword: false,
+      showFailedDialog: false,
       agree: false,
       isLoading: false,
       rules: {
@@ -250,7 +262,7 @@ export default {
           this.usernameExistedChecked = true
           if (info) {
             this.usernameExisted = true
-            this.errorMessage = '* 已存在的用戶名稱'
+            this.errorMessage = this.usernameHasError ? '' : '* 已存在的用戶名稱'
           } else {
             this.usernameExisted = false
             this.errorMessage = ''
@@ -274,15 +286,18 @@ export default {
       callback(hasError)
       return !hasError || message
     },
-    register () {
-      const vm = this
-      if (!vm.isLoading) {
-        vm.isLoading = true
-        setTimeout(() => {
-          vm.isLoading = false
-          vm.$emit('registered')
-          vm.resetRegisterData()
-        }, 3000)
+    async register () {
+      if (!this.isLoading) {
+        this.isLoading = true
+        let successful = await this.$api.register(this.username, this.password)
+        this.isLoading = false
+        if (successful) {
+          this.resetRegisterData()
+          this.$emit('registered')
+        } else {
+          this.showFailedDialog = true
+          this.currentStep = 1
+        }
       }
     },
     nextStep () {
