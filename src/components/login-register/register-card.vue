@@ -6,7 +6,12 @@
     >
       <v-card>
         <v-card-text class="text-xs-center headline">
-          <p><v-icon size="48" color="primary">warning</v-icon></p>
+          <p>
+            <v-icon
+              size="48"
+              color="primary"
+            >warning</v-icon>
+          </p>
           <p>註冊失敗</p>
         </v-card-text>
       </v-card>
@@ -66,7 +71,7 @@
                     v-model="username"
                     label="用戶名稱"
                     prepend-inner-icon="person"
-                    :rules="[value => validate(value, hasError => usernameHasError = hasError)]"
+                    :rules="[checkUsername]"
                     :error-messages="errorMessage"
                     counter="30"
                   ></v-text-field>
@@ -115,7 +120,7 @@
                     :type="showPassword ? 'text' : 'password'"
                     @mousedown="showPassword = true"
                     @mouseup="showPassword = false"
-                    :rules="[value => validate(value, hasError => passwordHasError = hasError)]"
+                    :rules="[checkPassword]"
                     counter="25"
                   ></v-text-field>
                 </v-flex>
@@ -215,11 +220,12 @@ export default {
       showFailedDialog: false,
       agree: false,
       isLoading: false,
+      isReseting: false,
       rules: {
         required: value => !!value,
         min: value => value.length >= 8,
         max: value => value.length <= 30,
-        ascii: value => (new RegExp('^[\\\x00-\x7F]*$')).test(value)
+        ascii: value => new RegExp('^[\\\x00-\x7F]*$').test(value)
       }
     }
   },
@@ -240,36 +246,28 @@ export default {
   },
   watch: {
     username () {
-      this.checkUsernameExisted()
+      !this.isReseting && !this.usernameHasError && this.checkUsernameExisted()
     }
   },
   methods: {
     checkUsernameExisted () {
       this.usernameExistedChecked = false
-      this.$api.getUserInfo(this.username)
-      // const delay = (ms) => new Promise((resolve, reject) => {
-      //   try {
-      //     setTimeout(resolve, ms)
-      //   } catch (e) {
-      //     reject(e)
-      //   }
-      // })
-      // delay(1000)
-      //   .then(() => {
-      //     return this.username === 'adminadmin'
-      //   })
+      this.$api
+        .getUserInfo(this.username)
         .then(info => {
           this.usernameExistedChecked = true
           if (info) {
             this.usernameExisted = true
-            this.errorMessage = this.usernameHasError ? '' : '* 已存在的用戶名稱'
+            this.errorMessage = this.usernameHasError
+              ? ''
+              : '* 已存在的用戶名稱'
           } else {
             this.usernameExisted = false
             this.errorMessage = ''
           }
         })
     },
-    validate (value, callback) {
+    validate (value) {
       let rules = this.rules
       let message = ''
       let hasError = false
@@ -283,8 +281,18 @@ export default {
         message = '* 內容必須是 ascii 字元'
       }
       hasError = !!message
-      callback(hasError)
       return !hasError || message
+    },
+    checkUsername (value) {
+      let result = this.validate(value)
+      this.usernameHasError = typeof result === 'string'
+      !this.isReseting && !this.usernameHasError && this.checkUsernameExisted()
+      return result
+    },
+    checkPassword (value) {
+      let result = this.validate(value)
+      this.passwordHasError = typeof result === 'string'
+      return result
     },
     async register () {
       if (!this.isLoading) {
@@ -307,6 +315,7 @@ export default {
       this.currentStep -= 1
     },
     resetRegisterData () {
+      this.isReseting = true
       this.currentStep = 1
       this.username = ''
       this.usernameHasError = false
@@ -323,6 +332,7 @@ export default {
       this.$refs.password.onBlur()
       this.$refs.username.reset()
       this.$refs.password.reset()
+      this.isReseting = false
     }
   }
 }

@@ -26,16 +26,6 @@
       <chat-list></chat-list>
     </v-navigation-drawer>
 
-    <!-- <v-navigation-drawer
-      app
-      v-if="$store.getters.loggedIn"
-      right
-      clipped
-      hide-overlay
-      mobile-break-point="960"
-    >
-    </v-navigation-drawer> -->
-
     <v-toolbar
       app
       absolute

@@ -8,26 +8,39 @@ axios.defaults.withCredentials = true
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'
 axios.defaults.headers.post['Access-Control-Allow-Origin'] = 'http://localhost:8080'
 
-const api = {
-
-  getUserInfo: async (username) => {
+class API {
+  async uploadFile (formData) {
+    let url = await axios.post('/static-file', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    return url
+  }
+  async updateUserInfo (username, avatar, nickname) {
+    let infoResponse = await axios.patch('/user/' + username, {
+      avatar,
+      nickname
+    })
+    let info = {
+      ...infoResponse.data.user,
+      privateKey: infoResponse.data.privateKey
+    }
+    return info
+  }
+  async getUserInfo (username) {
     try {
-      let infoResponse = await axios.get('/user', {
-        params: {
-          username
-        }
-      })
+      let { data } = await axios.get('/user/' + username)
       let info = {
-        ...infoResponse.data.user,
-        publicKey: infoResponse.data.publicKey
+        ...data.user
       }
       return info
     } catch (e) {
       console.log(e)
       return undefined
     }
-  },
-  register: async (username, secret) => {
+  }
+  async register (username, secret) {
     try {
       await axios.post('/user', {
         username,
@@ -38,28 +51,28 @@ const api = {
       console.log(e)
       return false
     }
-  },
-  login: async (username, password) => {
+  }
+  async login (username, password) {
     try {
       let salt = '$2b$10$' + crypto.createHash('sha256').update(username).digest('hex').slice(0, 22)
       let code = (await axios.get('/session')).data.code
       let hash1 = await bcrypt.hash(password, salt)
       let hash2 = await bcrypt.hash(hash1, code)
-      let infoResponse = await axios.post('/session', {
+      let { data } = await axios.post('/session', {
         username,
         password: hash2
       })
       let info = {
-        ...infoResponse.data.user,
-        privateKey: infoResponse.data.privateKey
+        ...data.user
       }
-      return info
+      let privateKey = data.privateKey
+      return { info, privateKey }
     } catch (e) {
       console.log(e)
       return undefined
     }
-  },
-  logout: async () => {
+  }
+  async logout () {
     try {
       await axios.delete('/session')
       return true
@@ -71,5 +84,5 @@ const api = {
 }
 
 Vue.use(() => {
-  Vue.prototype.$api = api
+  Vue.prototype.$api = new API()
 })

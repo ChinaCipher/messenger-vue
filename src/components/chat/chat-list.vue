@@ -16,7 +16,7 @@
     v-else
     two-line
   >
-    <template v-for="(contact, index) in contacts">
+    <template v-for="(chatRoom, index) in chatRooms">
       <v-divider
         v-if="index != 0"
         :key="'divider' + index"
@@ -25,19 +25,17 @@
       <v-list-tile
         :key="'item' + index"
         avatar
-        :to="'/chatroom/' + contact.username"
+        :to="'/chatroom/' + chatRoom.username"
       >
         <v-list-tile-avatar
           color="primary"
           size="48"
         >
-          <v-img
-            :src="contact.avatarUrl ? contact.avatarUrl : '/img/default_avatar.png'"
-          ></v-img>
+          <img :src="chatRoom.avatarUrl ? chatRoom.avatarUrl : '/img/default_avatar.png'">
         </v-list-tile-avatar>
         <v-list-tile-content>
-          <v-list-tile-title>{{ contact.nickname }}</v-list-tile-title>
-          <v-list-tile-sub-title>{{ contact.lastMessage }}</v-list-tile-sub-title>
+          <v-list-tile-title>{{ chatRoom.nickname }}</v-list-tile-title>
+          <v-list-tile-sub-title>{{ chatRoom.lastMessage }}</v-list-tile-sub-title>
         </v-list-tile-content>
       </v-list-tile>
     </template>
@@ -45,23 +43,23 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-
 export default {
-  computed: {
-    ...mapGetters(['selfInfo', 'contacts'])
-  },
+  computed: {},
   data () {
     return {
       isLoading: true,
-      chatDatas: []
+      chatRooms: [
+        {
+          avatarUrl: '',
+          username: '',
+          nickname: ''
+        }
+      ]
     }
   },
   methods: {
     loadData () {},
-    clickChatListItem (index) {
-      this.$store.dispatch('updateChatRoomInfo', this.contacts[index])
-    }
+    clickChatListItem (index) {}
   },
   mounted () {
     this.loadData()

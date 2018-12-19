@@ -41,7 +41,7 @@
             label="用戶名稱"
             prepend-inner-icon="person"
             :disabled="isLoading"
-            :rules="[value => validate(value, hasError => usernameHasError = hasError)]"
+            :rules="[checkUsername]"
             :error-messages="errorMessage"
             counter="30"
           ></v-text-field>
@@ -56,7 +56,7 @@
             :append-icon="showPassword ? 'visibility_off' : 'visibility'"
             :type="showPassword ? 'text' : 'password'"
             @click:append="showPassword = !showPassword"
-            :rules="[value => validate(value, hasError => passwordHasError = hasError)]"
+            :rules="[checkPassword]"
             counter="30"
           ></v-text-field>
         </v-flex>
@@ -101,6 +101,7 @@ export default {
       passwordHasError: false,
       showPassword: false,
       isLoading: false,
+      isReseting: false,
       showFailedDialog: false,
       rules: {
         required: value => !!value,
@@ -110,27 +111,10 @@ export default {
       }
     }
   },
-  watch: {
-    username () {
-      this.checkUsernameExisted()
-    }
-  },
   methods: {
     checkUsernameExisted () {
       this.usernameExistedChecked = false
       this.$api.getUserInfo(this.username)
-      // const delay = ms =>
-      //   new Promise((resolve, reject) => {
-      //     try {
-      //       setTimeout(resolve, ms)
-      //     } catch (e) {
-      //       reject(e)
-      //     }
-      //   })
-      // delay(1000)
-      //   .then(() => {
-      //     return this.username === 'adminadmin'
-      //   })
         .then(info => {
           this.usernameExistedChecked = true
           if (!info) {
@@ -144,7 +128,7 @@ export default {
           }
         })
     },
-    validate (value, callback) {
+    validate (value) {
       let rules = this.rules
       let message = ''
       let hasError = false
@@ -158,16 +142,27 @@ export default {
         message = '* 內容必須是 ascii 字元'
       }
       hasError = !!message
-      callback(hasError)
       return !hasError || message
+    },
+    checkUsername (value) {
+      let result = this.validate(value)
+      this.usernameHasError = typeof result === 'string'
+      !this.isReseting && !this.usernameHasError && this.checkUsernameExisted()
+      return result
+    },
+    checkPassword (value) {
+      let result = this.validate(value)
+      this.passwordHasError = typeof result === 'string'
+      return result
     },
     async login () {
       if (this.btnLoginEnabled) {
         this.isLoading = true
-        let info = await this.$api.login(this.username, this.password)
+        let { info, privateKey } = await this.$api.login(this.username, this.password)
         this.isLoading = false
         if (info) {
           this.$store.dispatch('setUserInfo', info)
+          this.$store.dispatch('setPrivateKey', privateKey)
           this.$store.dispatch('login')
           this.$emit('logged-in')
           this.resetLoginData()
@@ -177,6 +172,7 @@ export default {
       }
     },
     resetLoginData () {
+      this.isReseting = true
       this.username = ''
       this.usernameHasError = false
       this.usernameExisted = false
@@ -191,6 +187,7 @@ export default {
       this.$refs.password.onBlur()
       this.$refs.username.reset()
       this.$refs.password.reset()
+      this.isReseting = false
     }
   }
 }

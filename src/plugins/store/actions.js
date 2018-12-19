@@ -5,6 +5,9 @@ export default {
   setUserInfo ({ commit }, info) {
     commit('setUserInfo', info)
   },
+  setPrivateKey ({ commit }, key) {
+    commit('setPrivateKey', key)
+  },
   login ({ commit }) {
     commit('login')
   },

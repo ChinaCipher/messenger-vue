@@ -5,6 +5,9 @@ export default {
   setUserInfo (state, info) {
     state.userInfo = info
   },
+  setPrivateKey (state, key) {
+    state.privateKey = key
+  },
   login (state) {
     state.loggedIn = true
   },
