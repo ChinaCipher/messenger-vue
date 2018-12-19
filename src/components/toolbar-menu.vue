@@ -12,12 +12,27 @@
       <v-icon>more_vert</v-icon>
     </v-btn>
 
+    <modify-info-dialog v-model="showModifyInfoDialog"></modify-info-dialog>
+
     <v-list avatar>
-      <v-list-tile>
+      <!-- <v-list-tile>
         <v-switch
-          label="深色主題"
           v-model="darkTheme"
         ></v-switch>
+      </v-list-tile> -->
+      <v-list-tile @click="darkTheme = !darkTheme">
+        <v-list-tile-avatar>
+          <v-switch
+            v-model="darkTheme"
+          ></v-switch>
+        </v-list-tile-avatar>
+        <v-list-tile-title>深色主題</v-list-tile-title>
+      </v-list-tile>
+      <v-list-tile @click="showModifyInfoDialog = !showModifyInfoDialog">
+        <v-list-tile-avatar>
+          <v-icon>edit</v-icon>
+        </v-list-tile-avatar>
+        <v-list-tile-title>修改用戶資訊</v-list-tile-title>
       </v-list-tile>
       <v-list-tile @click="logout">
         <v-list-tile-avatar>
@@ -30,11 +45,16 @@
 </template>
 
 <script>
+import ModifyInfoDialog from '@/components/modify-info-dialog'
+
 export default {
   data () {
     return {
-
+      showModifyInfoDialog: false
     }
+  },
+  components: {
+    ModifyInfoDialog
   },
   computed: {
     darkTheme: {
@@ -43,7 +63,7 @@ export default {
         localStorage.setItem('darkTheme', JSON.stringify(value))
       },
       get () {
-        return this.$store.getters.darkTheme
+        return this.$store.state.darkTheme
       }
     }
   },
