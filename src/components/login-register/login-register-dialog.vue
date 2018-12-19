@@ -19,10 +19,16 @@
     </v-tabs>
     <v-tabs-items v-model="currentTab">
       <v-tab-item value="tab-login">
-        <login-card></login-card>
+        <login-card
+          ref="login"
+          @logged-in="logged"
+        ></login-card>
       </v-tab-item>
       <v-tab-item value="tab-register">
-        <register-card @registered="currentTab = 'tab-login'"></register-card>
+        <register-card
+          ref="register"
+          @registered="currentTab = 'tab-login'"
+        ></register-card>
       </v-tab-item>
     </v-tabs-items>
   </v-dialog>
@@ -39,6 +45,12 @@ export default {
   data () {
     return {
       currentTab: null
+    }
+  },
+  methods: {
+    logged () {
+      this.$refs.login.reset()
+      this.$refs.register.reset()
     }
   },
   components: {

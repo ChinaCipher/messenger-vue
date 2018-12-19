@@ -250,22 +250,22 @@ export default {
     }
   },
   methods: {
-    checkUsernameExisted () {
+    async checkUsernameExisted () {
       this.usernameExistedChecked = false
-      this.$api
-        .getUserInfo(this.username)
-        .then(info => {
-          this.usernameExistedChecked = true
-          if (info) {
-            this.usernameExisted = true
-            this.errorMessage = this.usernameHasError
-              ? ''
-              : '* 已存在的用戶名稱'
-          } else {
-            this.usernameExisted = false
-            this.errorMessage = ''
-          }
-        })
+      try {
+        let info = await this.$api.getUserInfo(this.username)
+        this.usernameExisted = !!info
+      } catch (e) {
+        this.usernameExisted = false
+      }
+      this.usernameExistedChecked = true
+      if (this.usernameExisted) {
+        this.errorMessage = this.usernameHasError
+          ? ''
+          : '* 已存在的用戶名稱'
+      } else {
+        this.errorMessage = ''
+      }
     },
     validate (value) {
       let rules = this.rules
@@ -301,7 +301,7 @@ export default {
         this.isLoading = false
         if (successful) {
           this.$emit('registered')
-          this.resetRegisterData()
+          this.reset()
         } else {
           this.showFailedDialog = true
           this.currentStep = 1
@@ -314,7 +314,7 @@ export default {
     previousStep () {
       this.currentStep -= 1
     },
-    resetRegisterData () {
+    reset () {
       this.isReseting = true
       this.currentStep = 1
       this.username = ''

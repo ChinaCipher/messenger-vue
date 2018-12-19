@@ -29,57 +29,48 @@ class API {
     return info
   }
   async getUserInfo (username) {
-    try {
-      let { data } = await axios.get('/user/' + username)
-      let info = {
-        ...data.user
-      }
-      return info
-    } catch (e) {
-      console.log(e)
-      return undefined
+    let { data } = await axios.get('/user/' + username)
+    let info = {
+      ...data.user
     }
+    return info
   }
   async register (username, secret) {
-    try {
-      await axios.post('/user', {
-        username,
-        secret
-      })
-      return true
-    } catch (e) {
-      console.log(e)
-      return false
-    }
+    await axios.post('/user', {
+      username,
+      secret
+    })
+    return true
   }
   async login (username, password) {
-    try {
-      let salt = '$2b$10$' + crypto.createHash('sha256').update(username).digest('hex').slice(0, 22)
-      let code = (await axios.get('/session')).data.code
-      let hash1 = await bcrypt.hash(password, salt)
-      let hash2 = await bcrypt.hash(hash1, code)
-      let { data } = await axios.post('/session', {
-        username,
-        password: hash2
-      })
-      let info = {
-        ...data.user
-      }
-      let privateKey = data.privateKey
-      return { info, privateKey }
-    } catch (e) {
-      console.log(e)
-      return undefined
+    let salt = '$2b$10$' + crypto.createHash('sha256').update(username).digest('hex').slice(0, 22)
+    let code = (await axios.get('/session')).data.code
+    let hash1 = await bcrypt.hash(password, salt)
+    let hash2 = await bcrypt.hash(hash1, code)
+    let { data } = await axios.post('/session', {
+      username,
+      password: hash2
+    })
+    let info = {
+      ...data.user
     }
+
+    // const decryptPrivateKey = () => {
+    //   let key = crypto.createHash('sha256').update(password).digest('hex').slice(0, 32)
+    //   let iv = crypto.createHash('sha256').update(username).digest('hex').slice(0, 16)
+    //   let decipher = crypto.createDecipheriv('aes-256-cbc', key, iv)
+    //   let decrypted = decipher.update(data.privateKey, 'hex', 'utf8') + decipher.final('utf8')
+    //   return decrypted
+    // }
+
+    // let privateKey = decryptPrivateKey()
+    let privateKey = data.privateKey
+
+    return { info, privateKey }
   }
   async logout () {
-    try {
-      await axios.delete('/session')
-      return true
-    } catch (e) {
-      console.log(e)
-      return false
-    }
+    await axios.delete('/session')
+    return true
   }
 }
 

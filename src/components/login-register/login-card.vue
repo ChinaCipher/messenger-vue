@@ -112,21 +112,22 @@ export default {
     }
   },
   methods: {
-    checkUsernameExisted () {
+    async checkUsernameExisted () {
       this.usernameExistedChecked = false
-      this.$api.getUserInfo(this.username)
-        .then(info => {
-          this.usernameExistedChecked = true
-          if (!info) {
-            this.usernameExisted = false
-            this.errorMessage = this.usernameHasError
-              ? ''
-              : '* 不存在的用戶名稱'
-          } else {
-            this.usernameExisted = true
-            this.errorMessage = ''
-          }
-        })
+      try {
+        let info = await this.$api.getUserInfo(this.username)
+        this.usernameExisted = !!info
+      } catch (e) {
+        this.usernameExisted = false
+      }
+      this.usernameExistedChecked = true
+      if (!this.usernameExisted) {
+        this.errorMessage = this.usernameHasError
+          ? ''
+          : '* 不存在的用戶名稱'
+      } else {
+        this.errorMessage = ''
+      }
     },
     validate (value) {
       let rules = this.rules
@@ -165,13 +166,13 @@ export default {
           this.$store.dispatch('setPrivateKey', privateKey)
           this.$store.dispatch('login')
           this.$emit('logged-in')
-          this.resetLoginData()
+          this.reset()
         } else {
           this.showFailedDialog = true
         }
       }
     },
-    resetLoginData () {
+    reset () {
       this.isReseting = true
       this.username = ''
       this.usernameHasError = false
