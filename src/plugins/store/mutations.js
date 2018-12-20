@@ -1,4 +1,7 @@
 export default {
+  setCode (state, code) {
+    state.code = code
+  },
   switchDarkTheme (state, enabled) {
     state.darkTheme = enabled
   },
@@ -7,11 +10,5 @@ export default {
   },
   setPrivateKey (state, key) {
     state.privateKey = key
-  },
-  login (state) {
-    state.loggedIn = true
-  },
-  logout (state) {
-    state.loggedIn = false
   }
 }

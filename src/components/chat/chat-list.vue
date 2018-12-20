@@ -14,8 +14,10 @@
   </v-layout>
   <v-list
     v-else
+    class="pa-0"
     two-line
   >
+    <v-subheader>聊天紀錄</v-subheader>
     <template v-for="(chatRoom, index) in chatRooms">
       <v-divider
         v-if="index != 0"
@@ -26,16 +28,17 @@
         :key="'item' + index"
         avatar
         :to="'/chatroom/' + chatRoom.username"
+        @click="$emit('click-chat-room', chatRoom)"
       >
         <v-list-tile-avatar
           color="primary"
           size="48"
         >
-          <img :src="chatRoom.avatarUrl ? chatRoom.avatarUrl : '/img/default_avatar.png'">
+          <img :src="chatRoom.avatar">
         </v-list-tile-avatar>
         <v-list-tile-content>
-          <v-list-tile-title>{{ chatRoom.nickname }}</v-list-tile-title>
-          <v-list-tile-sub-title>{{ chatRoom.lastMessage }}</v-list-tile-sub-title>
+          <v-list-tile-title class="headline">{{ chatRoom.nickname }}</v-list-tile-title>
+          <v-list-tile-sub-title>{{ chatRoom.username }}</v-list-tile-sub-title>
         </v-list-tile-content>
       </v-list-tile>
     </template>
@@ -48,18 +51,19 @@ export default {
   data () {
     return {
       isLoading: true,
-      chatRooms: [
-        {
-          avatarUrl: '',
-          username: '',
-          nickname: ''
-        }
-      ]
+      chatRooms: []
     }
   },
   methods: {
-    loadData () {},
-    clickChatListItem (index) {}
+    async loadData () {
+      let { error, rooms } = await this.$api.getChatRooms()
+      this.isLoading = false
+      if (error) {
+        console.log(error)
+      } else {
+        this.chatRooms = rooms
+      }
+    }
   },
   mounted () {
     this.loadData()

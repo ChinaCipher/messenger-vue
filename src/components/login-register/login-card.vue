@@ -114,12 +114,8 @@ export default {
   methods: {
     async checkUsernameExisted () {
       this.usernameExistedChecked = false
-      try {
-        let info = await this.$api.getUserInfo(this.username)
-        this.usernameExisted = !!info
-      } catch (e) {
-        this.usernameExisted = false
-      }
+      let { error } = await this.$api.getUserInfo(this.username)
+      this.usernameExisted = !!error
       this.usernameExistedChecked = true
       if (!this.usernameExisted) {
         this.errorMessage = this.usernameHasError
@@ -159,16 +155,16 @@ export default {
     async login () {
       if (this.btnLoginEnabled) {
         this.isLoading = true
-        let { info, privateKey } = await this.$api.login(this.username, this.password)
+        let { error, user, privateKey } = await this.$api.login(this.username, this.password, this.$store.state.code)
         this.isLoading = false
-        if (info) {
-          this.$store.dispatch('setUserInfo', info)
+        if (error) {
+          console.log(error)
+          this.showFailedDialog = true
+        } else {
+          this.$store.dispatch('setUserInfo', user)
           this.$store.dispatch('setPrivateKey', privateKey)
-          this.$store.dispatch('login')
           this.$emit('logged-in')
           this.reset()
-        } else {
-          this.showFailedDialog = true
         }
       }
     },

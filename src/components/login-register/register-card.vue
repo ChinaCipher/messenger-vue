@@ -252,12 +252,8 @@ export default {
   methods: {
     async checkUsernameExisted () {
       this.usernameExistedChecked = false
-      try {
-        let info = await this.$api.getUserInfo(this.username)
-        this.usernameExisted = !!info
-      } catch (e) {
-        this.usernameExisted = false
-      }
+      let { error } = await this.$api.getUserInfo(this.username)
+      this.usernameExisted = !!error
       this.usernameExistedChecked = true
       if (this.usernameExisted) {
         this.errorMessage = this.usernameHasError
@@ -297,14 +293,14 @@ export default {
     async register () {
       if (!this.isLoading) {
         this.isLoading = true
-        let successful = await this.$api.register(this.username, this.password)
+        let { error } = await this.$api.register(this.username, this.password)
         this.isLoading = false
-        if (successful) {
-          this.$emit('registered')
-          this.reset()
-        } else {
+        if (error) {
           this.showFailedDialog = true
           this.currentStep = 1
+        } else {
+          this.$emit('registered')
+          this.reset()
         }
       }
     },

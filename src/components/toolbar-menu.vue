@@ -15,11 +15,6 @@
     <modify-info-dialog v-model="showModifyInfoDialog"></modify-info-dialog>
 
     <v-list avatar>
-      <!-- <v-list-tile>
-        <v-switch
-          v-model="darkTheme"
-        ></v-switch>
-      </v-list-tile> -->
       <v-list-tile @click="darkTheme = !darkTheme">
         <v-list-tile-avatar>
           <v-switch
@@ -68,11 +63,13 @@ export default {
     }
   },
   methods: {
-    logout () {
-      this.$api.logout()
-        .then(successful => {
-          this.$store.dispatch('logout')
-        })
+    async logout () {
+      let { error } = await this.$api.logout()
+      if (error) {
+        console.log(error)
+      } else {
+        this.$store.dispatch('logout')
+      }
     }
   }
 }

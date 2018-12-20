@@ -2,7 +2,7 @@
   <v-dialog
     :value="value"
     @input="closeDialog"
-    max-width="400px"
+    max-width="400"
   >
     <v-card>
       <v-card-text class="text-xs-center display-1">
@@ -81,8 +81,10 @@ export default {
   },
   watch: {
     userInfoLoaded () {
-      this.input.avatar = this.userInfo.avatar
-      this.input.nickname = this.userInfo.nickname
+      if (this.userInfo) {
+        this.input.avatar = this.userInfo.avatar
+        this.input.nickname = this.userInfo.nickname
+      }
     }
   },
   computed: {

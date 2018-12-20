@@ -1,6 +1,6 @@
 export default {
+  code: undefined,
   darkTheme: false,
-  loggedIn: false,
   userInfo: undefined,
-  privateKey: ''
+  privateKey: undefined
 }

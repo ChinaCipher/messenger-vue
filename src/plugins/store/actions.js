@@ -1,4 +1,7 @@
 export default {
+  setCode ({ commit }, code) {
+    commit('setCode', code)
+  },
   switchDarkTheme ({ commit }, enabled) {
     commit('switchDarkTheme', enabled)
   },
@@ -8,10 +11,8 @@ export default {
   setPrivateKey ({ commit }, key) {
     commit('setPrivateKey', key)
   },
-  login ({ commit }) {
-    commit('login')
-  },
   logout ({ commit }) {
-    commit('logout')
+    commit('setUserInfo', undefined)
+    commit('setPrivateKey', undefined)
   }
 }

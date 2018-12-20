@@ -1,27 +1,19 @@
 <template>
-  <v-app style="min-width: 320px; overflow-x: auto;" :dark="$store.state.darkTheme">
-    <login-register-dialog :value="showLoginRegisterDialog"></login-register-dialog>
+  <v-app
+    style="min-width: 320px; overflow-x: auto;"
+    :dark="$store.state.darkTheme"
+  >
+    <login-register-dialog v-if="$store.state.code" :value="!$store.getters.loggedIn"></login-register-dialog>
 
     <v-navigation-drawer
       app
-      v-if="$store.state.loggedIn"
+      v-if="$store.getters.loggedIn"
       v-model="showDrawer"
       clipped
       hide-overlay
       mobile-break-point="768"
     >
-      <v-card flat>
-        <v-card-actions>
-          <v-text-field
-            prepend-inner-icon="search"
-            label="搜索用戶"
-            single-line
-            hide-details
-            :solo="!$store.state.darkTheme"
-            :solo-inverted="$store.state.darkTheme"
-          ></v-text-field>
-        </v-card-actions>
-      </v-card>
+      <search-chat></search-chat>
       <v-divider></v-divider>
       <chat-list></chat-list>
     </v-navigation-drawer>
@@ -56,7 +48,7 @@
     </v-toolbar>
 
     <v-content>
-      <router-view/>
+      <router-view />
     </v-content>
 
     <v-footer
@@ -83,16 +75,19 @@
 import ToolbarMenu from '@/components/toolbar-menu'
 import LoginRegisterDialog from '@/components/login-register/login-register-dialog'
 import ChatList from '@/components/chat/chat-list'
+import SearchChat from '@/components/chat/search-chat'
 
 export default {
   computed: {
     showLoginRegisterDialog () {
-      return !this.$store.state.loggedIn
+      return !this.$store.getters.loggedIn
     }
   },
   mounted () {
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
+    this.sayHelloToServer()
+    window.addEventListener('keypress', e => {
+      if (e.key === 'Escape' && this.$route.name === 'chatroom') {
+        this.$router.replace('/')
       }
     })
     if (!localStorage.getItem('darkTheme')) {
@@ -116,9 +111,18 @@ export default {
   components: {
     ToolbarMenu,
     LoginRegisterDialog,
-    ChatList
+    ChatList,
+    SearchChat
   },
   methods: {
+    async sayHelloToServer () {
+      let { code, profile } = await this.$api.sayHelloToServer()
+      this.$store.dispatch('setCode', code)
+      if (profile) {
+        this.$store.dispatch('setUserInfo', profile.user)
+        this.$store.dispatch('setPrivateKey', profile.privateKey)
+      }
+    }
   }
 }
 </script>
