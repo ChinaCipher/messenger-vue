@@ -13,9 +13,9 @@
       hide-overlay
       mobile-break-point="768"
     >
-      <search-chat></search-chat>
+      <search-chat-room></search-chat-room>
       <v-divider></v-divider>
-      <chat-list></chat-list>
+      <chat-room-list></chat-room-list>
     </v-navigation-drawer>
 
     <v-toolbar
@@ -72,10 +72,10 @@
 </template>
 
 <script>
-import ToolbarMenu from '@/components/toolbar-menu'
-import LoginRegisterDialog from '@/components/login-register/login-register-dialog'
-import ChatList from '@/components/chat/chat-list'
-import SearchChat from '@/components/chat/search-chat'
+import ToolbarMenu from './components/toolbar/toolbar-menu'
+import LoginRegisterDialog from './components/login-register/login-register-dialog'
+import ChatRoomList from './components/chat/chat-room-list'
+import SearchChatRoom from './components/chat/search-chat-room'
 
 export default {
   computed: {
@@ -111,16 +111,20 @@ export default {
   components: {
     ToolbarMenu,
     LoginRegisterDialog,
-    ChatList,
-    SearchChat
+    ChatRoomList,
+    SearchChatRoom
   },
   methods: {
     async sayHelloToServer () {
       let { code, profile } = await this.$api.sayHelloToServer()
       this.$store.dispatch('setCode', code)
       if (profile) {
-        this.$store.dispatch('setUserInfo', profile.user)
-        this.$store.dispatch('setPrivateKey', profile.privateKey)
+        let { error } = await this.$api.logout()
+        if (error) {
+          console.log(error)
+        }
+        // this.$store.dispatch('setUserInfo', profile.user)
+        // this.$store.dispatch('setPrivateKey', profile.privateKey)
       }
     }
   }

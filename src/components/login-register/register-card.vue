@@ -253,7 +253,7 @@ export default {
     async checkUsernameExisted () {
       this.usernameExistedChecked = false
       let { error } = await this.$api.getUserInfo(this.username)
-      this.usernameExisted = !!error
+      this.usernameExisted = !error
       this.usernameExistedChecked = true
       if (this.usernameExisted) {
         this.errorMessage = this.usernameHasError
@@ -296,6 +296,7 @@ export default {
         let { error } = await this.$api.register(this.username, this.password)
         this.isLoading = false
         if (error) {
+          console.log(error)
           this.showFailedDialog = true
           this.currentStep = 1
         } else {

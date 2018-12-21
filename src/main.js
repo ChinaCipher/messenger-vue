@@ -4,7 +4,7 @@ import App from './App.vue'
 import router from './plugins/router'
 import store from './plugins/store/'
 import './api/'
-import './registerServiceWorker'
+import './plugins/registerServiceWorker'
 import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 

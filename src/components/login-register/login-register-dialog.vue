@@ -35,8 +35,8 @@
 </template>
 
 <script>
-import LoginCard from '@/components/login-register/login-card'
-import RegisterCard from '@/components/login-register/register-card'
+import LoginCard from './login-card'
+import RegisterCard from './register-card'
 
 export default {
   props: {

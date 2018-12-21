@@ -98,6 +98,7 @@ class API {
     } catch (e) {
       let status = e.response.status
       if (status === 404) {
+        console.log('not found')
         return { error: status }
       } else {
         throw e
@@ -134,10 +135,16 @@ class API {
   async getChatRoomMessageKey (targetUsername, privateKey) {
     try {
       let { data } = await axios.get('/chat/' + targetUsername)
-      data.messageKey = await EC.decrypt(privateKey, data.messageKey)
+      try {
+        data.messageKey = JSON.parse(data.messageKey)
+        data.messageKey = await EC.decrypt(privateKey, data.messageKey)
+      } catch (e) {
+        console.log(e)
+      }
       return data
     } catch (e) {
       let status = e.response.status
+      console.log('waa')
       if (status === 401 || status === 404) {
         return { error: status }
       } else {
@@ -145,22 +152,6 @@ class API {
       }
     }
   }
-  // async createChatRoom (username) {
-  //   let { data } = await axios.post('/chat/', { username })
-  //   let room = {
-  //     userInfo: data.user,
-  //     messageKey: data.messageKey
-  //   }
-  //   return room
-  // }
-  // async getChatRoomMessages (username, messageKey) {
-  //   let { data } = await axios.get('/chat' + username)
-  //   let messages = data.messages.map((message) => {
-  //     let iv = crypto.createHash('sha256').update(message.sender).digest('hex').slice(0, 16)
-  //     message.content = aesDecrypt(message.content, messageKey, iv)
-  //   })
-  //   return messages
-  // }
   // async sendMessage (senderUsername, receiverUsername, plainMessage, messageKey) {
   //   let iv = crypto.createHash('sha256').update(senderUsername).digest('hex').slice(0, 16)
   //   let encrypted = aesEncrypt(plainMessage, messageKey, iv)

@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import CreateChatRoomDialog from '@/components/chat/create-chat-room-dialog'
+import CreateChatRoomDialog from './create-chat-room-dialog'
 
 export default {
   components: {
@@ -92,18 +92,20 @@ export default {
   },
   methods: {
     async search () {
-      this.isSearching = true
-      let { error, user, publicKey } = await this.$api.getUserInfo(
-        this.searchUsername
-      )
-      this.isSearching = false
-      if (error) {
-        // console.log(error)
-        this.resultUserInfo = undefined
-        this.resultUserPublicKey = undefined
-      } else {
-        this.resultUserInfo = user
-        this.resultUserPublicKey = publicKey
+      if (this.searchUsername) {
+        this.isSearching = true
+        let { error, user, publicKey } = await this.$api.getUserInfo(
+          this.searchUsername
+        )
+        this.isSearching = false
+        if (error) {
+          // console.log(error)
+          this.resultUserInfo = undefined
+          this.resultUserPublicKey = undefined
+        } else {
+          this.resultUserInfo = user
+          this.resultUserPublicKey = publicKey
+        }
       }
     },
     async clickSearchResult () {
@@ -111,16 +113,16 @@ export default {
         this.resultUserInfo.username,
         this.$store.state.privateKey
       )
-      if (error) {
-        if (error === 401) {
-          console.log(error)
-        } else if (error === 404) {
-          console.log('尚未建立聊天室')
-          this.showCreateChatRoomDialog = true
-        }
-      } else {
-        console.log('已建立過聊天室')
-      }
+      // if (error) {
+      //   if (error === 401) {
+      //     console.log(error)
+      //   } else if (error === 404) {
+      //     console.log('尚未建立聊天室')
+      //     this.showCreateChatRoomDialog = true
+      //   }
+      // } else {
+      //   console.log('已建立過聊天室')
+      // }
     }
   }
 }

@@ -115,7 +115,7 @@ export default {
     async checkUsernameExisted () {
       this.usernameExistedChecked = false
       let { error } = await this.$api.getUserInfo(this.username)
-      this.usernameExisted = !!error
+      this.usernameExisted = !error
       this.usernameExistedChecked = true
       if (!this.usernameExisted) {
         this.errorMessage = this.usernameHasError

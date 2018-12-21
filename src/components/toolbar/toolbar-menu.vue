@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import ModifyInfoDialog from '@/components/modify-info-dialog'
+import ModifyInfoDialog from './modify-info-dialog'
 
 export default {
   data () {
