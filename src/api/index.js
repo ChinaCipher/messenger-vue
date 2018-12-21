@@ -11,32 +11,6 @@ axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'
 axios.defaults.headers.post['Access-Control-Allow-Origin'] = 'http://localhost:8080'
 
 class API {
-  // async downloadMessageFile (url) {
-  //   let { data } = await axios.get(url)
-  //   let file = new Blob(Buffer.from(data, 'utf8'))
-  //   file.lastModifiedDate = new Date()
-  //   file.name = 'avatar'
-  //   return file
-  // }
-  // async uploadMessageFile (formData) {
-  //   let url = await axios.post('/static-file', formData, {
-  //     headers: {
-  //       'Content-Type': 'multipart/form-data'
-  //     }
-  //   })
-  //   return url
-  // }
-  // async updateUserInfo (username, avatar, nickname) {
-  //   let infoResponse = await axios.patch('/user/' + username, {
-  //     avatar,
-  //     nickname
-  //   })
-  //   let info = {
-  //     ...infoResponse.data.user,
-  //     privateKey: infoResponse.data.privateKey
-  //   }
-  //   return info
-  // }
   // User Api
   async sayHelloToServer () {
     let data = (await axios.get('/session')).data
