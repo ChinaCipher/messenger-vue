@@ -5,7 +5,7 @@ import zhHant from 'vuetify/es5/locale/zh-Hant'
 
 Vue.use(Vuetify, {
   theme: {
-    primary: '#c62828',
+    primary: '#C62828',
     secondary: '#424242',
     accent: '#D50000',
     error: '#FF5252',
