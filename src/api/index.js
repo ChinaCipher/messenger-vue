@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import axios from 'axios'
 import bcrypt from 'bcryptjs'
-import { SHA256, AES, EC } from './util'
+import { SHA256, AES, EC, MessageHandler } from './util'
 // import Blob from 'blob'
 
 axios.defaults.baseURL = 'https://ccm.ntut.com.tw/api'
@@ -12,11 +12,13 @@ axios.defaults.headers.post['Access-Control-Allow-Origin'] = 'http://localhost:8
 
 class API {
   // User Api
-  async sayHelloToServer () {
+  static async sayHelloToServer () {
+    console.log('hello')
     let data = (await axios.get('/session')).data
     return data
   }
-  async login (username, password, code) {
+  static async login (username, password, code) {
+    console.log('login')
     try {
       let salt = '$2b$10$' + SHA256.hash(username).slice(0, 22)
       let hash1 = await bcrypt.hash(password, salt)
@@ -36,7 +38,8 @@ class API {
       }
     }
   }
-  async logout () {
+  static async logout () {
+    console.log('logout')
     try {
       await axios.delete('/session')
       return {}
@@ -49,7 +52,7 @@ class API {
       }
     }
   }
-  async register (username, secret) {
+  static async register (username, secret) {
     try {
       let { data } = await axios.post('/user', {
         username,
@@ -65,14 +68,14 @@ class API {
       }
     }
   }
-  async getUserInfo (targetUsername) {
+  static async getUserInfo (receiverUsername) {
     try {
-      let { data } = await axios.get('/user/' + targetUsername)
+      let { data } = await axios.get(`/user/${receiverUsername}`)
       return data
     } catch (e) {
+      console.log('not found ' + receiverUsername)
       let status = e.response.status
       if (status === 404) {
-        console.log('not found')
         return { error: status }
       } else {
         throw e
@@ -80,7 +83,7 @@ class API {
     }
   }
   // Chat Api
-  async getChatRooms () {
+  static async getChatRooms () {
     try {
       let { data } = await axios.get('/chat')
       return data
@@ -93,9 +96,9 @@ class API {
       }
     }
   }
-  async createChatRoom (targetUsername) {
+  static async createChatRoom (receiverUsername) {
     try {
-      let { data } = await axios.post('/chat', { username: targetUsername })
+      let { data } = await axios.post('/chat', { username: receiverUsername })
       return data
     } catch (e) {
       let status = e.response.status
@@ -106,19 +109,20 @@ class API {
       }
     }
   }
-  async getChatRoomMessageKey (targetUsername, privateKey) {
+  static async getChatRoomMessageKey (receiverUsername, privateKey) {
     try {
-      let { data } = await axios.get('/chat/' + targetUsername)
+      let { data } = await axios.get(`/chat/${receiverUsername}`)
       try {
+        // privatekey utf8
         data.messageKey = JSON.parse(data.messageKey)
-        data.messageKey = await EC.decrypt(privateKey, data.messageKey)
+        data.messageKey = await EC.decrypt(data.messageKey, privateKey)
+        console.log(data.messageKey)
       } catch (e) {
         console.log(e)
       }
       return data
     } catch (e) {
       let status = e.response.status
-      console.log('waa')
       if (status === 401 || status === 404) {
         return { error: status }
       } else {
@@ -126,17 +130,53 @@ class API {
       }
     }
   }
-  // async sendMessage (senderUsername, receiverUsername, plainMessage, messageKey) {
-  //   let iv = crypto.createHash('sha256').update(senderUsername).digest('hex').slice(0, 16)
-  //   let encrypted = aesEncrypt(plainMessage, messageKey, iv)
-  //   let { message } = await axios.post('/chat' + receiverUsername, {
-  //     content: encrypted
-  //   })
-  //   message.content = aesDecrypt(message.content, messageKey, iv)
-  //   return message
-  // }
+  static async getChatRoomMessages (receiverUsername, index, count, messageKey) {
+    try {
+      let params = {}
+      if (index) params.index = index
+      if (count) params.count = count
+      let { data } = await axios.get(`/chat/${receiverUsername}/message`, { params })
+      console.log(data)
+      data.messages.forEach((message) => {
+        MessageHandler.decrypt(message, messageKey)
+      })
+      return data
+    } catch (e) {
+      let status = e.response.status
+      if (status === 401 || status === 404) {
+        return { error: status }
+      } else {
+        console.log(e)
+        throw e
+      }
+    }
+  }
+  static async getChatRoomLastMessage (receiverUsername, messageKey) {
+    let { error, messages } = await API.getChatRoomMessages(receiverUsername, undefined, undefined, messageKey)
+    return { error, message: messages[0] }
+  }
+  static async sendChatRoomMessage (senderUsername, receiverUsername, message, messageKey) {
+    try {
+      console.log(1, message)
+      MessageHandler.encrypt(senderUsername, message, messageKey)
+      console.log(2, message)
+      let { data } = await axios.post(`/chat/${receiverUsername}/message`, message)
+      let sendedMessage = data
+      console.log(3, sendedMessage)
+      MessageHandler.decrypt(sendedMessage, messageKey)
+      console.log(4, sendedMessage)
+      return { sendedMessage }
+    } catch (e) {
+      let status = e.response.status
+      if (status === 401 || status === 404) {
+        return { error: status }
+      } else {
+        throw e
+      }
+    }
+  }
 }
 
 Vue.use(() => {
-  Vue.prototype.$api = new API()
+  Vue.prototype.$api = API
 })
