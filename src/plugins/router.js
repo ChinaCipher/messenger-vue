@@ -16,7 +16,8 @@ export default new Router({
     {
       name: 'chatroom',
       path: '/chatroom/:username',
-      component: ChatRoom
+      component: ChatRoom,
+      props: true
     }
   ]
 })
