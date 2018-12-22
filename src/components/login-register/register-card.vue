@@ -244,11 +244,6 @@ export default {
                     +`
     }
   },
-  watch: {
-    username () {
-      !this.isReseting && !this.usernameHasError && this.checkUsernameExisted()
-    }
-  },
   methods: {
     async checkUsernameExisted () {
       this.usernameExistedChecked = false

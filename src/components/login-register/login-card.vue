@@ -86,7 +86,8 @@ export default {
         this.usernameExistedChecked &&
         this.usernameExisted &&
         !this.passwordHasError &&
-        !this.isLoading
+        !this.isLoading &&
+        !this.isReseting
       )
     }
   },
@@ -158,13 +159,15 @@ export default {
         let { error, user, privateKey } = await this.$api.login(this.username, this.password, this.$store.state.code)
         this.isLoading = false
         if (error) {
-          console.log(error)
-          this.showFailedDialog = true
+          if (error === 401) {
+            console.log(error)
+            await this.sayHelloToServer()
+            this.showFailedDialog = true
+          }
         } else {
           this.$store.dispatch('setUserInfo', user)
           this.$store.dispatch('setPrivateKey', privateKey)
           this.$emit('logged-in')
-          this.reset()
         }
       }
     },
@@ -185,6 +188,18 @@ export default {
       this.$refs.username.reset()
       this.$refs.password.reset()
       this.isReseting = false
+    },
+    async sayHelloToServer () {
+      let { code, profile } = await this.$api.sayHelloToServer()
+      this.$store.dispatch('setCode', code)
+      if (profile) {
+        let { error } = await this.$api.logout()
+        if (error) {
+          console.log('logout failed')
+        } else {
+          await this.sayHelloToServer()
+        }
+      }
     }
   }
 }
