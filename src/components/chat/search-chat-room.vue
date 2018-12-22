@@ -1,17 +1,4 @@
 <template>
-  <!-- <v-layout
-    v-if="isLoading"
-    row
-    wrap
-    fill-height
-    justify-center
-    align-center
-  >
-    <v-progress-circular
-      indeterminate
-      color="primary"
-    ></v-progress-circular>
-  </v-layout> -->
   <v-layout
     row
     wrap
@@ -33,6 +20,7 @@
             :solo="!$store.state.darkTheme"
             :solo-inverted="$store.state.darkTheme"
             @input="search"
+            @chat-created="$emit('chat-created', $event)"
           >
             <v-fade-transition slot="append">
               <v-progress-circular
@@ -98,7 +86,7 @@ export default {
         )
         this.isSearching = false
         if (error) {
-          // console.log(error)
+          console.log(error)
           this.resultUserInfo = undefined
         } else {
           this.resultUserInfo = { avatar, username, nickname }
@@ -114,11 +102,9 @@ export default {
         if (error === 401) {
           console.log(error)
         } else if (error === 404) {
-          console.log('尚未建立聊天室')
           this.showCreateChatRoomDialog = true
         }
       } else {
-        console.log('已建立過聊天室')
         this.$router.replace('/chatroom/' + this.resultUserInfo.username)
       }
     }

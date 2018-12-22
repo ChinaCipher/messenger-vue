@@ -13,12 +13,10 @@ axios.defaults.headers.post['Access-Control-Allow-Origin'] = 'http://localhost:8
 class API {
   // User Api
   static async sayHelloToServer () {
-    console.log('hello')
     let data = (await axios.get('/session')).data
     return data
   }
   static async login (username, password, code) {
-    console.log('login')
     try {
       let salt = '$2b$10$' + SHA256.hash(username).slice(0, 22)
       let hash1 = await bcrypt.hash(password, salt)
@@ -39,7 +37,6 @@ class API {
     }
   }
   static async logout () {
-    console.log('logout')
     try {
       await axios.delete('/session')
       return {}
@@ -73,7 +70,6 @@ class API {
       let { data } = await axios.get(`/user/${receiverUsername}`)
       return data
     } catch (e) {
-      console.log('not found ' + receiverUsername)
       let status = e.response.status
       if (status === 404) {
         return { error: status }
@@ -113,10 +109,8 @@ class API {
     try {
       let { data } = await axios.get(`/chat/${receiverUsername}`)
       try {
-        // privatekey utf8
         data.messageKey = JSON.parse(data.messageKey)
         data.messageKey = await EC.decrypt(data.messageKey, privateKey)
-        console.log(data.messageKey)
       } catch (e) {
         console.log(e)
       }
@@ -136,7 +130,6 @@ class API {
       if (index) params.index = index
       if (count) params.count = count
       let { data } = await axios.get(`/chat/${receiverUsername}/message`, { params })
-      console.log(data)
       data.messages.forEach((message) => {
         MessageHandler.decrypt(message, messageKey)
       })
@@ -157,14 +150,10 @@ class API {
   }
   static async sendChatRoomMessage (senderUsername, receiverUsername, message, messageKey) {
     try {
-      console.log(1, message)
       MessageHandler.encrypt(senderUsername, message, messageKey)
-      console.log(2, message)
       let { data } = await axios.post(`/chat/${receiverUsername}/message`, message)
       let sendedMessage = data
-      console.log(3, sendedMessage)
       MessageHandler.decrypt(sendedMessage, messageKey)
-      console.log(4, sendedMessage)
       return { sendedMessage }
     } catch (e) {
       let status = e.response.status

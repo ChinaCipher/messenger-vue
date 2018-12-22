@@ -10,7 +10,6 @@ export class SHA256 {
 
 export class AES {
   static encrypt (plaintext, key, iv) {
-    console.log(plaintext, key, iv)
     let cipher = crypto.createCipheriv('aes-256-cbc', key, iv)
     let encrypted = cipher.update(plaintext, 'utf8', 'hex') + cipher.final('hex')
     return encrypted
@@ -44,9 +43,7 @@ export class MessageHandler {
     let iv = SHA256.hash(senderUsername).slice(0, 16)
     switch (message.type) {
       case 'text':
-        console.log('yee', message)
         MessageHandler.encryptTextMessage(message, key, iv)
-        console.log('yeee', message)
         break
       default:
     }

@@ -20,7 +20,6 @@
 
     <v-toolbar
       app
-      absolute
       clipped-left
       clipped-right
       height="90"

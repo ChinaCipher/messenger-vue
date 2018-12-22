@@ -73,6 +73,7 @@ export default {
       }
       this.isLoading = false
       this.$emit('input', false)
+      this.$emit('chat-created', this.userInfo)
     }
   }
 }
