@@ -1,6 +1,5 @@
 <template>
   <v-layout
-    v-if="$store.getters.isChatting"
     class="chat-block"
     column
     wrap
@@ -11,14 +10,14 @@
       class="chat-block__title"
     >
       <v-layout
-        class="chat-title mx-3"
+        class="chat-title px-3"
         row
         wrap
       >
-        <v-avatar class="align-self-center" color="red">
+        <!-- <v-avatar class="align-self-center" color="red">
           <v-img :src="avatar"></v-img>
-        </v-avatar>
-        <span class="headline align-self-start">{{ chatRoomInfo.nickname }}</span>
+        </v-avatar> -->
+        <span class="headline align-self-start">{{ username }}</span>
       </v-layout>
       <v-divider></v-divider>
     </v-flex>
@@ -38,18 +37,18 @@
         wrap
       >
         <v-textarea
-          v-model="inputMessage"
+          v-model="inputText"
           class="headline align-self-center mt-0 pt-0"
           style="break-after: none;"
           hide-details
-          :rows="rows"
+          :rows="inputRows"
           no-resize
-          @keydown.enter.exact.prevent="sendMessage"
+          @keydown.enter.exact.prevent="sendTextMessage"
         ></v-textarea>
         <v-btn
           class="mr-0 align-self-end"
           icon
-          @click="sendMessage"
+          @click="sendTextMessage"
         >
           <v-icon color="primary">send</v-icon>
         </v-btn>
@@ -59,30 +58,71 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 export default {
+  props: {
+    username: String
+  },
   computed: {
-    ...mapGetters(['chatRoomInfo']),
-    avatar () {
-      return this.chatRoomInfo.avatarUrl
-        ? this.chatRoomInfo.avatarUrl
-        : '/img/default_avatar.png'
-    },
-    rows () {
-      return this.inputMessage.split('\n').length
+    inputRows () {
+      return this.inputText.split('\n').length
     }
   },
   data () {
     return {
-      inputMessage: ''
+      isLoading: false,
+      userInfo: undefined,
+      messages: [],
+      messageKey: undefined,
+      inputText: ''
     }
   },
   methods: {
-    sendMessage () {
-      let message = this.inputMessage.trim()
-      if (message) {
-        this.inputMessage = ''
+    async load () {
+      let { error, avatar, username, nickname } = await this.$api.getUserInfo(this.username)
+      if (error) {
+        console.log(error)
+      } else {
+        this.userInfo = { avatar, username, nickname }
+        let { error, messageKey } = await this.$api.getChatRoomMessageKey(this.username, this.$store.state.privateKey)
+        if (error) {
+          console.log(error)
+        } else {
+          this.messageKey = messageKey
+          let { error, messages } = await this.$api.getChatRoomMessages(this.username, undefined, 20, messageKey)
+          if (error) {
+            console.log(error)
+          } else {
+            this.messages = messages
+          }
+        }
       }
+    },
+    async sendTextMessage () {
+      let text = this.inputText.trim()
+      if (text) {
+        let message = {}
+        message.type = 'text'
+        message.content = text
+        let { error, sendedMessage } = await this.$api.sendChatRoomMessage(this.$store.state.userInfo.username, this.username, message, this.messageKey)
+        if (error) {
+          console.log(error)
+        } else {
+          this.messages.push(sendedMessage)
+          this.inputText = ''
+        }
+      }
+    }
+  },
+  watch: {
+    username () {
+      this.load()
+    }
+  },
+  mounted () {
+    if (this.$store.getters.loggedIn) {
+      this.load()
+    } else {
+      this.$router.replace('/')
     }
   }
 }

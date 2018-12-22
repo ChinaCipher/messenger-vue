@@ -28,7 +28,7 @@
         :key="'item' + index"
         avatar
         :to="'/chatroom/' + chatRoom.username"
-        @click="$emit('click-chat-room', chatRoom)"
+        replace
       >
         <v-list-tile-avatar
           color="primary"
@@ -38,7 +38,7 @@
         </v-list-tile-avatar>
         <v-list-tile-content>
           <v-list-tile-title class="headline">{{ chatRoom.nickname }}</v-list-tile-title>
-          <v-list-tile-sub-title>{{ chatRoom.username }}</v-list-tile-sub-title>
+          <v-list-tile-sub-title v-if="chatRoom.subTitle">{{ chatRoom.subTitle.sender }}: {{ chatRoom.subTitle.content }}</v-list-tile-sub-title>
         </v-list-tile-content>
       </v-list-tile>
     </template>
@@ -47,7 +47,6 @@
 
 <script>
 export default {
-  computed: {},
   data () {
     return {
       isLoading: true,
@@ -55,18 +54,42 @@ export default {
     }
   },
   methods: {
-    async loadData () {
+    async load () {
       let { error, rooms } = await this.$api.getChatRooms()
-      this.isLoading = false
       if (error) {
         console.log(error)
       } else {
         this.chatRooms = rooms
+        this.chatRooms.forEach(async (room) => {
+          let { error, messageKey } = await this.$api.getChatRoomMessageKey(room.username, this.$store.state.privateKey)
+          if (error) {
+            console.log(error)
+          } else {
+            let { error, message } = await this.$api.getChatRoomLastMessage(room.username, messageKey)
+            if (error) {
+              console.log(error)
+            } else if (message) {
+              room.subTitle = this.getRoomSubTitle(room, message)
+            }
+          }
+        })
       }
+      this.isLoading = false
+    },
+    getRoomSubTitle (room, lastMessage) {
+      console.log(lastMessage)
+      let sender = lastMessage.sender === room.username ? room.nickname : '我'
+      let content = ''
+      if (lastMessage.type === 'text') {
+        content = lastMessage.content
+      } else {
+        console.log('soooooo weird')
+      }
+      return { sender, content }
     }
   },
   mounted () {
-    this.loadData()
+    this.load()
   }
 }
 </script>

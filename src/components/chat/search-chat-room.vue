@@ -86,7 +86,6 @@ export default {
       isSearching: false,
       searchUsername: '',
       resultUserInfo: undefined,
-      resultUserPublicKey: undefined,
       showCreateChatRoomDialog: false
     }
   },
@@ -94,35 +93,34 @@ export default {
     async search () {
       if (this.searchUsername) {
         this.isSearching = true
-        let { error, user, publicKey } = await this.$api.getUserInfo(
+        let { error, avatar, username, nickname } = await this.$api.getUserInfo(
           this.searchUsername
         )
         this.isSearching = false
         if (error) {
           // console.log(error)
           this.resultUserInfo = undefined
-          this.resultUserPublicKey = undefined
         } else {
-          this.resultUserInfo = user
-          this.resultUserPublicKey = publicKey
+          this.resultUserInfo = { avatar, username, nickname }
         }
       }
     },
     async clickSearchResult () {
-      let { error, messageKey } = await this.$api.getChatRoomMessageKey(
+      let { error } = await this.$api.getChatRoomMessageKey(
         this.resultUserInfo.username,
         this.$store.state.privateKey
       )
-      // if (error) {
-      //   if (error === 401) {
-      //     console.log(error)
-      //   } else if (error === 404) {
-      //     console.log('尚未建立聊天室')
-      //     this.showCreateChatRoomDialog = true
-      //   }
-      // } else {
-      //   console.log('已建立過聊天室')
-      // }
+      if (error) {
+        if (error === 401) {
+          console.log(error)
+        } else if (error === 404) {
+          console.log('尚未建立聊天室')
+          this.showCreateChatRoomDialog = true
+        }
+      } else {
+        console.log('已建立過聊天室')
+        this.$router.replace('/chatroom/' + this.resultUserInfo.username)
+      }
     }
   }
 }

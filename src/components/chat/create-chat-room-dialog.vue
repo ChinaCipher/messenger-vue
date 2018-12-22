@@ -72,7 +72,7 @@ export default {
         console.log('created chat room')
       }
       this.isLoading = false
-      this.value = false
+      this.$emit('input', false)
     }
   }
 }
