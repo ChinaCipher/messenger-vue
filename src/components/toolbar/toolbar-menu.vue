@@ -69,6 +69,19 @@ export default {
         console.log(error)
       } else {
         this.$store.dispatch('logout')
+        await this.sayHelloToServer()
+      }
+    },
+    async sayHelloToServer () {
+      let { code, profile } = await this.$api.sayHelloToServer()
+      this.$store.dispatch('setCode', code)
+      if (profile) {
+        let { error } = await this.$api.logout()
+        if (error) {
+          console.log('logout failed')
+        } else {
+          await this.sayHelloToServer()
+        }
       }
     }
   }
