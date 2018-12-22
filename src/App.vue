@@ -11,7 +11,7 @@
       v-model="showDrawer"
       clipped
       hide-overlay
-      mobile-break-point="768"
+      mobile-break-point="640"
     >
       <search-chat-room></search-chat-room>
       <v-divider></v-divider>
@@ -121,10 +121,10 @@ export default {
       if (profile) {
         let { error } = await this.$api.logout()
         if (error) {
-          console.log(error)
+          console.log('logout failed')
+        } else {
+          await this.sayHelloToServer()
         }
-        // this.$store.dispatch('setUserInfo', profile.user)
-        // this.$store.dispatch('setPrivateKey', profile.privateKey)
       }
     }
   }
