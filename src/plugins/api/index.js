@@ -37,6 +37,7 @@ class API {
     }
   }
   static async logout () {
+    console.log('logout')
     try {
       await axios.delete('/session')
       return {}
