@@ -165,6 +165,7 @@ export default {
             this.showFailedDialog = true
           }
         } else {
+          this.$ccm.connect()
           this.$store.dispatch('setUserInfo', user)
           this.$store.dispatch('setPrivateKey', privateKey)
           this.$emit('logged-in')

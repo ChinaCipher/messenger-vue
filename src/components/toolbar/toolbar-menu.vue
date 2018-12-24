@@ -69,6 +69,8 @@ export default {
         console.log(error)
       } else {
         this.$store.dispatch('logout')
+        this.$ccm.disconnect()
+        this.$router.replace('/')
         await this.sayHelloToServer()
       }
     },

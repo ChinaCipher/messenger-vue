@@ -7,6 +7,7 @@
       v-if="resultUserInfo"
       v-model="showCreateChatRoomDialog"
       :userInfo="resultUserInfo"
+      @chat-created="$emit('chat-created', $event)"
     ></create-chat-room-dialog>
     <v-flex xs12>
       <v-card flat>
@@ -20,7 +21,6 @@
             :solo="!$store.state.darkTheme"
             :solo-inverted="$store.state.darkTheme"
             @input="search"
-            @chat-created="$emit('chat-created', $event)"
           >
             <v-fade-transition slot="append">
               <v-progress-circular
@@ -51,7 +51,7 @@
               <v-list-tile-title>{{ resultUserInfo.nickname }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
-          <v-card v-else>
+          <v-card v-else flat>
             <v-card-text class="text-xs-center">
               找不到此用戶
             </v-card-text>

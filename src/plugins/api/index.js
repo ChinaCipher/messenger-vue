@@ -1,11 +1,11 @@
 import Vue from 'vue'
+import config from '@/config'
 import axios from 'axios'
 import bcrypt from 'bcryptjs'
 import { SHA256, AES, EC, MessageHandler } from './util'
 // import Blob from 'blob'
 
-axios.defaults.baseURL = 'https://ccm.ntut.com.tw/api'
-// axios.defaults.baseURL = 'http://localhost:8787/api'
+axios.defaults.baseURL = `${config.baseUrl}/api`
 axios.defaults.withCredentials = true
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'
 axios.defaults.headers.post['Access-Control-Allow-Origin'] = 'http://localhost:8080'
@@ -161,6 +161,21 @@ class API {
       if (status === 401 || status === 404) {
         return { error: status }
       } else {
+        throw e
+      }
+    }
+  }
+  static async getChatRoomMessageById (id, receiverUsername, messageKey) {
+    try {
+      let { data } = await axios.get(`/chat/${receiverUsername}/message/${id}`)
+      MessageHandler.decrypt(data, messageKey)
+      return data
+    } catch (e) {
+      let status = e.response.status
+      if (status === 401 || status === 404) {
+        return { error: status }
+      } else {
+        console.log(e)
         throw e
       }
     }

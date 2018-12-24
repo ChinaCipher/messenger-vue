@@ -33,7 +33,7 @@
         </v-layout>
         <v-divider></v-divider>
       </div>
-      <div class="chat-block__message pa-3">
+      <div ref="messageBlock" class="chat-block__message pa-3">
         <v-layout
           row
           wrap
@@ -137,7 +137,6 @@ export default {
             console.log(error)
           } else {
             this.messages = messages
-            console.log(this.messages)
           }
         }
       }
@@ -149,7 +148,8 @@ export default {
         let message = {}
         message.type = 'text'
         message.content = text
-        let { error, sendedMessage } = await this.$api.sendChatRoomMessage(
+        // let { error, sendedMessage } = await this.$api.sendChatRoomMessage(
+        let { error } = await this.$api.sendChatRoomMessage(
           this.$store.state.userInfo.username,
           this.username,
           message,
@@ -158,20 +158,37 @@ export default {
         if (error) {
           console.log(error)
         } else {
-          this.messages.push(sendedMessage)
+          // this.messages.push(sendedMessage)
           this.inputText = ''
         }
       }
+    },
+    async receiveMessage (data) {
+      if (data.sender === this.username) {
+        let message = await this.$api.getChatRoomMessageById(data.id, this.username, this.messageKey)
+        this.messages.push(message)
+      }
+    },
+    scrollToBottom () {
+      this.$nextTick()
+        .then(() => {
+          let messageBlock = this.$refs.messageBlock
+          messageBlock.scrollTop = messageBlock.scrollHeight
+        })
     }
   },
   watch: {
     username () {
       this.load()
+    },
+    messages () {
+      this.scrollToBottom()
     }
   },
   mounted () {
     if (this.$store.getters.loggedIn) {
       this.load()
+      this.$ccm.socket.on('message', this.receiveMessage)
     } else {
       this.$router.replace('/')
     }

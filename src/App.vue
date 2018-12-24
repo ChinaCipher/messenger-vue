@@ -13,8 +13,6 @@
       hide-overlay
       mobile-break-point="640"
     >
-      <search-chat-room></search-chat-room>
-      <v-divider></v-divider>
       <chat-room-list></chat-room-list>
     </v-navigation-drawer>
 
@@ -73,8 +71,7 @@
 <script>
 import ToolbarMenu from './components/toolbar/toolbar-menu'
 import LoginRegisterDialog from './components/login-register/login-register-dialog'
-import ChatRoomList from './components/chat/chat-room-list'
-import SearchChatRoom from './components/chat/search-chat-room'
+import ChatRoomList from './components/chat/chat-room-list/'
 
 export default {
   computed: {
@@ -110,8 +107,7 @@ export default {
   components: {
     ToolbarMenu,
     LoginRegisterDialog,
-    ChatRoomList,
-    SearchChatRoom
+    ChatRoomList
   },
   methods: {
     async sayHelloToServer () {
